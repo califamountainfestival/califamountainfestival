@@ -373,7 +373,7 @@ strong {
 }
 
 .sticky-wrapper.is-sticky .navbar {
-  background-color: var(--dark-color);
+  background-color: var(--red-custom);
 }
 
 .navbar {
@@ -512,11 +512,27 @@ strong {
   ABOUT              
 -----------------------------------------*/
 .about-section {
-  background-image: url('../images/edward-unsplash-blur.jpg');
-  background-color: #704010;
+  background-color: var(--blue-custom) !important;
   background-repeat: no-repeat;
   background-size: cover;
   position: relative;
+}
+
+.section2022 {
+  background-color: var(--yellow-dark-custom) !important;
+  color: var(--blue-custom) !important;
+}
+
+.text-blue-custom {
+  color: var(--blue-custom) !important;
+}
+
+.yellow-dark {
+	background-image: url('../images/montanas-23.png') !important;
+	background-color: var(--yellow-dark-custom) !important;
+	color: var(--blue-custom) !important;
+	background-repeat: no-repeat;
+	background-size: auto;
 }
 
 .about-image {
@@ -834,8 +850,8 @@ strong {
 }
 
 .site-footer-top {
-  background-color: var(--secondary-color);
-  background-image: url('../images/nainoa-shizuru-NcdG9mK3PBY-unsplash.jpg');
+  background-color: var(--blue-custom);
+  background-image: url('../images/montanas-23.png');
   background-repeat: no-repeat;
   margin-bottom: 70px;
   padding-top: 30px;
@@ -1026,3 +1042,14 @@ strong {
   }
 }
 
+.three-column {
+  float: left;
+  width: 33.3%;
+  padding: 5px;
+}
+/* Clear floats after the columns */
+.three-row:after {
+  content: "";
+  display: table;
+  clear: both;
+}

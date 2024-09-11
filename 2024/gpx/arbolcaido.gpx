@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gpx creator="Wikiloc - https://www.wikiloc.com" version="1.1" xmlns="http://www.topografix.com/GPX/1/1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd http://www.garmin.com/xmlschemas/GpxExtensions/v3 http://www.garmin.com/xmlschemas/GpxExtensionsv3.xsd http://www.garmin.com/xmlschemas/TrackPointExtension/v1 http://www.garmin.com/xmlschemas/TrackPointExtensionv1.xsd http://www.garmin.com/xmlschemas/PowerExtension/v1 http://www.garmin.com/xmlschemas/PowerExtensionv1.xsd http://www.topografix.com/GPX/gpx_style/0/2 http://www.topografix.com/GPX/gpx_style/0/2/gpx_style.xsd" xmlns:gpxtpx="http://www.garmin.com/xmlschemas/TrackPointExtension/v1" xmlns:gpxx="http://www.garmin.com/xmlschemas/GpxExtensions/v3" xmlns:gpxpx="http://www.garmin.com/xmlschemas/PowerExtension/v1" xmlns:gpx_style="http://www.topografix.com/GPX/gpx_style/0/2">
+  <metadata>
+    <name>Wikiloc - 3* Etapa crono Califa Mountain Festival</name>
+    <author>
+      <name>gpx.studio</name>
+      <link href="https://gpx.studio"/>
+    </author>
+    <link href="https://www.wikiloc.com/running-trails/3-etapa-crono-califa-mountain-festival-147315764">
+      <text>3* Etapa crono Califa Mountain Festival on Wikiloc</text>
+    </link>
+    <time>2023-09-17T08:28:47.000Z</time>
+  </metadata>
+  <trk>
+    <name>3* Etapa crono Califa Mountain Festival</name>
+    <cmt>Ruta circular desde Cerro Muriano pasando por: 
+- Parque periurbano de los Villares 
+- Fuente de la Alcubilla</cmt>
+    <desc>Ruta circular desde Cerro Muriano pasando por: 
+- Parque periurbano de los Villares 
+- Fuente de la Alcubilla</desc>
+    <trkseg>
+      <trkpt lat="37.981957" lon="-4.79318">
+        <ele>548.468</ele>
+        <time>2023-09-17T08:41:47.000Z</time>
+      </trkpt>
+      <trkpt lat="37.982382" lon="-4.793247">
+        <ele>542.242</ele>
+        <time>2023-09-17T08:42:07.000Z</time>
+      </trkpt>
+      <trkpt lat="37.983178" lon="-4.793673">
+        <ele>531.426</ele>
+        <time>2023-09-17T08:42:27.000Z</time>
+      </trkpt>
+      <trkpt lat="37.983482" lon="-4.793989">
+        <ele>527.209</ele>
+        <time>2023-09-17T08:42:47.000Z</time>
+      </trkpt>
+      <trkpt lat="37.983916" lon="-4.793547">
+        <ele>520.447</ele>
+        <time>2023-09-17T08:43:07.000Z</time>
+      </trkpt>
+      <trkpt lat="37.984578" lon="-4.793589">
+        <ele>513.23</ele>
+        <time>2023-09-17T08:43:27.000Z</time>
+      </trkpt>
+      <trkpt lat="37.984718" lon="-4.793806">
+        <ele>521.663</ele>
+        <time>2023-09-17T08:43:47.000Z</time>
+      </trkpt>
+      <trkpt lat="37.98456" lon="-4.794069">
+        <ele>523.029</ele>
+        <time>2023-09-17T08:44:07.000Z</time>
+      </trkpt>
+    </trkseg>
+  </trk>
+</gpx>

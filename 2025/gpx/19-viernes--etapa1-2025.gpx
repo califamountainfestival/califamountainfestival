@@ -7,14 +7,6 @@
       <link href="https://gpx.studio"/>
     </author>
   </metadata>
-  <wpt lat="37.986422" lon="-4.770484">
-    <ele>575.3665773021643</ele>
-    <name>Avituallamiento 1</name>
-  </wpt>
-  <wpt lat="37.985843" lon="-4.796453">
-    <ele>607.9804819718569</ele>
-    <name>Avituallamiento 2</name>
-  </wpt>
   <trk>
     <name>Carrera de mañana</name>
     <type>Cycling</type>

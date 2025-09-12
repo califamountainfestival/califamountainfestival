@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <gpx creator="Wikiloc - https://www.wikiloc.com" version="1.1" schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd http://www.garmin.com/xmlschemas/GpxExtensions/v3 http://www.garmin.com/xmlschemas/GpxExtensionsv3.xsd http://www.garmin.com/xmlschemas/TrackPointExtension/v1 http://www.garmin.com/xmlschemas/TrackPointExtensionv1.xsd http://www.garmin.com/xmlschemas/PowerExtension/v1 http://www.garmin.com/xmlschemas/PowerExtensionv1.xsd http://www.topografix.com/GPX/gpx_style/0/2 http://www.topografix.com/GPX/gpx_style/0/2/gpx_style.xsd" xmlns="http://www.topografix.com/GPX/1/1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd http://www.garmin.com/xmlschemas/GpxExtensions/v3 http://www.garmin.com/xmlschemas/GpxExtensionsv3.xsd http://www.garmin.com/xmlschemas/TrackPointExtension/v1 http://www.garmin.com/xmlschemas/TrackPointExtensionv1.xsd http://www.garmin.com/xmlschemas/PowerExtension/v1 http://www.garmin.com/xmlschemas/PowerExtensionv1.xsd http://www.topografix.com/GPX/gpx_style/0/2 http://www.topografix.com/GPX/gpx_style/0/2/gpx_style.xsd" xmlns:gpxtpx="http://www.garmin.com/xmlschemas/TrackPointExtension/v1" xmlns:gpxx="http://www.garmin.com/xmlschemas/GpxExtensions/v3" xmlns:gpxpx="http://www.garmin.com/xmlschemas/PowerExtension/v1" xmlns:gpx_style="http://www.topografix.com/GPX/gpx_style/0/2">
   <metadata>
-    <name>Wikiloc - 3* Etapa crono Califa Mountain Festival</name>
+    <name>CRONO-CXM</name>
+    <desc>CRONO-CXM</desc>
     <author>
       <name>gpx.studio</name>
       <link href="https://gpx.studio"/>
@@ -12,7 +13,7 @@
     <time>2023-09-17T08:28:47.000Z</time>
   </metadata>
   <trk>
-    <name>3* Etapa crono Califa Mountain Festival</name>
+    <name>CRONO-CXM</name>
     <cmt>Ruta circular desde Cerro Muriano pasando por: 
 - Parque periurbano de los Villares 
 - Fuente de la Alcubilla</cmt>
@@ -1221,39 +1222,31 @@
       </trkpt>
       <trkpt lat="37.971212518315184" lon="-4.804547333109383">
         <ele>601.7930179105379</ele>
-        <time>2023-09-17T09:13:45.026Z</time>
+        <time>2023-09-17T09:13:49.609Z</time>
       </trkpt>
-      <trkpt lat="37.97126512783697" lon="-4.80460517121611">
-        <ele>602.4409628942147</ele>
-        <time>2023-09-17T09:13:47.302Z</time>
+      <trkpt lat="37.971212518315184" lon="-4.804547333109383">
+        <ele>601.7930179105379</ele>
+        <time>2023-09-17T09:13:49.609Z</time>
       </trkpt>
-      <trkpt lat="37.97126512783697" lon="-4.80460517121611">
-        <ele>602.4409628942147</ele>
-        <time>2023-09-17T09:13:47.302Z</time>
+      <trkpt lat="37.97159552447779" lon="-4.804277845432466">
+        <ele>601.8767592356076</ele>
+        <time>2023-09-17T09:14:10.207Z</time>
       </trkpt>
-      <trkpt lat="37.97138437594643" lon="-4.805014487045156">
-        <ele>606.4748044918296</ele>
-        <time>2023-09-17T09:14:13.022Z</time>
+      <trkpt lat="37.97159552447779" lon="-4.804277845432466">
+        <ele>601.8767592356076</ele>
+        <time>2023-09-17T09:14:10.207Z</time>
       </trkpt>
-      <trkpt lat="37.97138437594643" lon="-4.805014487045156">
-        <ele>606.4748044918296</ele>
-        <time>2023-09-17T09:14:13.052Z</time>
+      <trkpt lat="37.971709063923896" lon="-4.804510831853008">
+        <ele>604.1158379896312</ele>
+        <time>2023-09-17T09:14:20.967Z</time>
       </trkpt>
-      <trkpt lat="37.97138437594643" lon="-4.805014487045156">
-        <ele>606.4748044918296</ele>
-        <time>2023-09-17T09:14:13.082Z</time>
+      <trkpt lat="37.971709063923896" lon="-4.804510831853008">
+        <ele>604.1158379896312</ele>
+        <time>2023-09-17T09:14:20.967Z</time>
       </trkpt>
-      <trkpt lat="37.97146153638465" lon="-4.805179103194092">
-        <ele>609.6181743888282</ele>
-        <time>2023-09-17T09:14:18.734Z</time>
-      </trkpt>
-      <trkpt lat="37.97146153638465" lon="-4.805179103194092">
-        <ele>609.6181743888282</ele>
-        <time>2023-09-17T09:14:18.734Z</time>
-      </trkpt>
-      <trkpt lat="37.971742119112946" lon="-4.805036732470711">
-        <ele>608.6708254279812</ele>
-        <time>2023-09-17T09:14:30.047Z</time>
+      <trkpt lat="37.97180590625412" lon="-4.804955624111301">
+        <ele>608.2715942151465</ele>
+        <time>2023-09-17T09:14:39.095Z</time>
       </trkpt>
     </trkseg>
   </trk>

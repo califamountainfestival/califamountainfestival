@@ -3,8 +3,6 @@
 
 <head>
     <img src="https://tag.yieldoptimizer.com/ps/analytics?pxid=361135&" width="1" height="1">
-    <meta http-equiv="refresh" content="0; url=2026/reglamento-califamountainfestival-2026_4.pdf" />
-
     <meta charset="UTF-8">
     <meta http-equiv="Cache-Control" content="no-cache">
     <meta http-equiv="Pragma" content="no-cache">
@@ -26,6 +24,40 @@
     <link href="css/bootstrap-icons.css" rel="stylesheet">
     <link href="css/templatemo-festava-live.css" rel="stylesheet">
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+
 </head>
+<body>
+    <canvas id="pdf-render" style="border: 1px solid black; direction: ltr;"></canvas>
+
+    <script>
+        // Set the worker path (required by PDF.js)
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+        const url = '=2026/reglamento-califamountainfestival-2026_4.pdf';
+
+        // Load the PDF
+        pdfjsLib.getDocument(url).promise.then(pdf => {
+            // Fetch the first page
+            pdf.getPage(1).then(page => {
+                const scale = 1.5;
+                const viewport = page.getViewport({ scale: scale });
+
+                // Prepare canvas using PDF page dimensions
+                const canvas = document.getElementById('pdf-render');
+                const context = canvas.getContext('2d');
+                canvas.height = viewport.height;
+                canvas.width = viewport.width;
+
+                // Render PDF page into canvas context
+                const renderContext = {
+                    canvasContext: context,
+                    viewport: viewport
+                };
+                page.render(renderContext);
+            });
+        });
+    </script>
+</body>
 
 </html>

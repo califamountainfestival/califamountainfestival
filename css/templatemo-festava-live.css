@@ -734,6 +734,9 @@ strong {
     .schedule-table .clausura-background-image {
         background-image: url('../images/artists/clausura.jpg');
     }
+    .schedule-table .obstaculos-background-image {
+        background-image: url('../images/artists/obstaculos.jpg');
+    }
 
 .table-background-image-wrap {
     background-repeat: no-repeat;

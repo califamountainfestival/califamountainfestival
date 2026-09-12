@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tabla Dinámica con Autorefresco</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f4f6f8;
+        }
+
+        #contenedor-tabla {
+            max-width: 100%;
+            overflow-x: auto;
+            background: #fff;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        /* Estilos básicos para la tabla extraída */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .loader {
+            color: #666;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+
+    <h2>Datos Extraídos en Tiempo Real</h2>
+    <div id="contenedor-tabla">
+        <p class="loader">Cargando datos...</p>
+    </div>
+
+    <script>
+        // Cambia esta dirección por la URL que desees procesar
+        const URL_TARGET = 'https://masatletismocrono.com/25-04-campeonato-espana-universitario-cxm-uco/';
+
+        async function cargarTabla() {
+            const proxyUrl = 'https://api.allorigins.win/raw?url=' + encodeURIComponent(URL_TARGET);
+            const contenedor = document.getElementById('contenedor-tabla');
+
+            try {
+                // 1. Descargar el HTML de la web remota
+                const response = await fetch(proxyUrl);
+                if (!response.ok) throw new Error('Error al descargar el HTML');
+                const htmlTexto = await text();
+
+                // 2. Parsear el HTML completo como un documento interno
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(htmlTexto, 'text/html');
+
+                // 3. Extraer solo la primera tabla disponible
+                const tabla = doc.querySelector('table');
+
+                if (tabla) {
+                    contenedor.innerHTML = '';
+                    contenedor.appendChild(tabla);
+                } else {
+                    contenedor.innerHTML = '<p>No se encontró ninguna tabla en el sitio indicado.</p>';
+                }
+            } catch (error) {
+                console.error(error);
+                contenedor.innerHTML = `<p style="color:red;">Error al cargar la tabla: ${error.message}</p>`;
+            }
+        }
+
+        // Carga inicial al entrar a la página
+        cargarTabla();
+
+        // Refrescar cada 5 segundos (5000ms)
+        setInterval(cargarTabla, 5000);
+    </script>
+
+</body>
+</html>

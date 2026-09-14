@@ -3,91 +3,141 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tabla Dinámica con Autorefresco</title>
+    <title>Visualizador de CSV en Tiempo Real</title>
+
+    <!-- Librería para convertir CSV a JSON/HTML fácilmente -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+
     <style>
         body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-            background-color: #f4f6f8;
+            font-family: system-ui, -apple-system, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f8f9fa;
+        }
+
+        .header-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
         }
 
         #contenedor-tabla {
-            max-width: 100%;
+            width: 100%;
             overflow-x: auto;
-            background: #fff;
-            padding: 15px;
+            background: #ffffff;
             border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            padding: 16px;
+            box-sizing: border-box;
         }
 
-        /* Estilos básicos para la tabla extraída */
         table {
             width: 100%;
             border-collapse: collapse;
         }
 
         th, td {
-            border: 1px solid #ddd;
-            padding: 10px;
+            border: 1px solid #e9ecef;
+            padding: 10px 14px;
             text-align: left;
         }
 
         th {
-            background-color: #007bff;
+            background-color: #0d6efd;
             color: white;
         }
 
-        .loader {
-            color: #666;
-            font-style: italic;
+        tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+
+        .estado {
+            font-size: 0.9em;
+            color: #6c757d;
         }
     </style>
 </head>
 <body>
 
-    <h2>Datos Extraídos en Tiempo Real</h2>
-    <div id="contenedor-tabla">
-        <p class="loader">Cargando datos...</p>
+    <div class="header-info">
+        <h2>Datos del CSV</h2>
+        <span id="estado" class="estado">Cargando...</span>
     </div>
 
-    <script>
-        // Cambia esta dirección por la URL que desees procesar
-        const URL_TARGET = 'https://masatletismocrono.com/25-04-campeonato-espana-universitario-cxm-uco/';
+    <div id="contenedor-tabla">Cargando datos del CSV...</div>
 
-        async function cargarTabla() {
-            const proxyUrl = 'https://api.allorigins.win/raw?url=' + encodeURIComponent(URL_TARGET);
+    <script>
+        // Cambia esta URL por el enlace directo a tu archivo .csv
+        // (Funciona genial con URLs públicas de Google Sheets en formato CSV, GitHub Raw, etc.)
+        const CSV_URL = 'https://masatletismocrono.com/wp-content/uploads/CEUS_UCO.csv';
+
+        async function cargarCSV() {
             const contenedor = document.getElementById('contenedor-tabla');
+            const estado = document.getElementById('estado');
 
             try {
-                // 1. Descargar el HTML de la web remota
-                const response = await fetch(proxyUrl);
-                if (!response.ok) throw new Error('Error al descargar el HTML');
-                const htmlTexto = await text();
+                // Añadimos un parámetro de tiempo para evitar la caché del navegador al refrescar
+                const urlSinCache = `${CSV_URL}?t=${new Date().getTime()}`;
 
-                // 2. Parsear el HTML completo como un documento interno
-                const parser = new DOMParser();
-                const doc = parser.parseFromString(htmlTexto, 'text/html');
+                const response = await fetch(urlSinCache);
+                if (!response.ok) throw new Error(`Error ${response.status}: No se pudo descargar el archivo`);
 
-                // 3. Extraer solo la primera tabla disponible
-                const tabla = doc.querySelector('table');
+                const csvTexto = await response.text();
 
-                if (tabla) {
-                    contenedor.innerHTML = '';
-                    contenedor.appendChild(tabla);
-                } else {
-                    contenedor.innerHTML = '<p>No se encontró ninguna tabla en el sitio indicado.</p>';
-                }
+                // Convertir el texto CSV a un array JS usando PapaParse
+                Papa.parse(csvTexto, {
+                    header: false, // Pon true si la primera fila tiene nombres de columnas
+                    skipEmptyLines: true,
+                    complete: function(results) {
+                        generarTablaHTML(results.data);
+                        const ahora = new Date().toLocaleTimeString();
+                        estado.textContent = `Última actualización: ${ahora}`;
+                    }
+                });
+
             } catch (error) {
                 console.error(error);
-                contenedor.innerHTML = `<p style="color:red;">Error al cargar la tabla: ${error.message}</p>`;
+                contenedor.innerHTML = `<p style="color:red;">Error: ${error.message}</p>`;
+                estado.textContent = 'Error al actualizar';
             }
         }
 
-        // Carga inicial al entrar a la página
-        cargarTabla();
+        function generarTablaHTML(filas) {
+            if (!filas || filas.length === 0) {
+                document.getElementById('contenedor-tabla').innerHTML = '<p>El CSV está vacío.</p>';
+                return;
+            }
 
-        // Refrescar cada 5 segundos (5000ms)
-        setInterval(cargarTabla, 5000);
+            let html = '<table>';
+
+            // 1. Construir la cabecera (thead) con la primera fila del CSV
+            html += '<thead><tr>';
+            filas[0].forEach(celda => {
+                html += `<th>${celda}</th>`;
+            });
+            html += '</tr></thead>';
+
+            // 2. Construir el cuerpo (tbody) con el resto de filas
+            html += '<tbody>';
+            for (let i = 1; i < filas.length; i++) {
+                html += '<tr>';
+                filas[i].forEach(celda => {
+                    html += `<td>${celda}</td>`;
+                });
+                html += '</tr>';
+            }
+            html += 'tbody></table>';
+
+            document.getElementById('contenedor-tabla').innerHTML = html;
+        }
+
+        // Carga inicial
+        cargarCSV();
+
+        // Refresco automático cada 30 segundos (30000 ms)
+        setInterval(cargarCSV, 30000);
     </script>
 
 </body>

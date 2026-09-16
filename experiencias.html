@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Redirigiendo...</title>
+    <script>
+        // 1. Captura toda la ruta, parámetros (?param=valor) y anclajes (#hash) actuales
+        var rutaCompleta = window.location.pathname + window.location.search + window.location.hash;
+        
+        // 2. Define tu nuevo dominio destino
+        var nuevoDominio = "https://hilandopixel.com";
+        
+        // 3. Redirige de forma dinámica conservando todo lo anterior
+        window.location.replace(nuevoDominio + rutaCompleta);
+    </script>
+</head>
+<body>
+    <p>Si no eres redirigido automáticamente, <a id="enlaceAlternativo" href="https://hilandopixel.com">haz clic aquí</a>.</p>
+    
+    <script>
+        // Por si acaso JavaScript corre muy rápido o el usuario quiere hacer clic manual
+        document.getElementById('enlaceAlternativo').href = "https://hilandopixel.com" + rutaCompleta;
+    </script>
+</body>
+</html>

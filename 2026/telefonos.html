@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>5 Califa Mountain Festival - Listado de Teléfonos de Emergencia</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- FontAwesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- QRCode.js Library -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap');
+    
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background-color: #f8fafc;
+      color: #1b2149;
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+    }
+
+    /* Event Theme Colors */
+    .bg-califa-navy { background-color: #1b2149; }
+    .text-califa-navy { color: #1b2149; }
+    .border-califa-navy { border-color: #1b2149; }
+    
+    .bg-califa-red { background-color: #c61a2b; }
+    .text-califa-red { color: #c61a2b; }
+    .border-califa-red { border-color: #c61a2b; }
+
+    .bg-califa-cream { background-color: #fffde8; }
+    .border-califa-cream { border-color: #f7f3c6; }
+
+    /* Print settings for strict 1-page A4 vertical fit */
+    @page {
+      size: A4 portrait;
+      margin: 6mm 8mm 6mm 8mm;
+    }
+
+    @media print {
+      body {
+        background-color: #ffffff !important;
+        color: #1b2149 !important;
+      }
+      .no-print {
+        display: none !important;
+      }
+      .page-container {
+        box-shadow: none !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        max-width: 100% !important;
+        width: 100% !important;
+        border: none !important;
+      }
+      .print-card {
+        border: 1px solid #cbd5e1 !important;
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
+      }
+      .qr-code canvas, .qr-code img {
+        margin: 0 auto !important;
+      }
+    }
+
+    .qr-code canvas, .qr-code img {
+      display: block;
+      margin: 0 auto;
+    }
+  </style>
+</head>
+<body class="p-3 md:p-6 min-h-screen flex flex-col items-center justify-start">
+
+  <!-- Action Bar / Print Button (Hidden on Print) -->
+  <div class="no-print w-full max-w-[210mm] mb-4 flex flex-wrap justify-between items-center bg-white p-3.5 rounded-xl shadow-sm border border-slate-200 gap-3">
+    <div class="flex items-center gap-3">
+      <img src="logo-califamountainfestival-2026.png" alt="Logo Califa Mountain Festival" class="h-10 w-auto object-contain">
+      <div>
+        <h1 class="text-sm font-bold text-slate-800">Vista Previa de Impresión (1 Hoja A4 Vertical)</h1>
+        <p class="text-[11px] text-slate-500">Diseño optimizado con códigos QR interactivos para llamada rápida.</p>
+      </div>
+    </div>
+    <div class="flex items-center gap-2">
+      <button onclick="window.print()" class="bg-[#c61a2b] hover:bg-red-800 text-white font-bold py-2 px-4 rounded-lg shadow-sm transition flex items-center gap-2 text-xs cursor-pointer">
+        <i class="fa-solid fa-print"></i> Imprimir / Guardar PDF
+      </button>
+    </div>
+  </div>
+
+  <!-- Main A4 Printable Area -->
+  <div class="page-container w-full max-w-[210mm] bg-white p-5 rounded-2xl shadow-md border border-slate-200">
+    
+    <!-- Header with Logo and Title -->
+    <header class="border-b-2 border-[#c61a2b] pb-2 mb-3 flex justify-between items-center gap-4">
+      <div class="flex items-center gap-3">
+        <img src="logo-califamountainfestival-2026.png" alt="5 Califa Mountain Festival Logo" class="h-14 w-auto object-contain">
+        <div>
+          <h1 class="text-base font-black uppercase tracking-tight text-[#1b2149] leading-tight">
+            5 CALIFA MOUNTAIN FESTIVAL
+          </h1>
+          <h2 class="text-xs font-extrabold text-[#c61a2b] uppercase tracking-wide">
+            TELÉFONOS DE EMERGENCIA Y ORGANIZACIÓN
+          </h2>
+          <p class="text-[10px] text-slate-500 font-medium mt-0.5">Escanea cualquier código QR con la cámara de tu móvil para realizar la llamada al instante.</p>
+        </div>
+      </div>
+      <div class="text-right hidden sm:block">
+        <span class="inline-block bg-[#fffde8] text-[#1b2149] border border-[#e8e29b] font-bold text-[9px] px-2.5 py-1 rounded-md uppercase tracking-wider">
+          <i class="fa-solid fa-shield-halved text-[#c61a2b] mr-1"></i> Uso Oficial
+        </span>
+      </div>
+    </header>
+
+    <!-- Grid Layout (3 columns for optimal height distribution on A4) -->
+    <div class="grid grid-cols-2 md:grid-cols-3 gap-2" id="contacts-grid">
+
+      <!-- 1. Jose Cañas -->
+      <div class="print-card bg-slate-50 rounded-lg p-2 border border-slate-200 flex items-center justify-between gap-1.5 relative overflow-hidden">
+        <div class="flex-1 min-w-0">
+          <span class="text-[8.5px] uppercase font-extrabold text-[#c61a2b] block truncate">Jefes de Tramo</span>
+          <h3 class="text-xs font-bold text-[#1b2149] truncate">Jose Cañas</h3>
+          <a href="tel:637549759" class="text-xs font-mono font-bold text-slate-700 block mt-0.5 hover:text-[#c61a2b]">637 54 97 59</a>
+        </div>
+        <div class="qr-code shrink-0 bg-white p-1 rounded border border-slate-200 shadow-2xs" data-tel="tel:637549759"></div>
+      </div>
+
+      <!-- 2. Alberto Fernández -->
+      <div class="print-card bg-slate-50 rounded-lg p-2 border border-slate-200 flex items-center justify-between gap-1.5 relative overflow-hidden">
+        <div class="flex-1 min-w-0">
+          <span class="text-[8.5px] uppercase font-extrabold text-[#c61a2b] block truncate">Jefes de Tramo</span>
+          <h3 class="text-xs font-bold text-[#1b2149] truncate">Alberto Fernández</h3>
+          <a href="tel:609615972" class="text-xs font-mono font-bold text-slate-700 block mt-0.5 hover:text-[#c61a2b]">609 61 59 72</a>
+        </div>
+        <div class="qr-code shrink-0 bg-white p-1 rounded border border-slate-200 shadow-2xs" data-tel="tel:609615972"></div>
+      </div>
+
+      <!-- 3. Pepe -->
+      <div class="print-card bg-slate-50 rounded-lg p-2 border border-slate-200 flex items-center justify-between gap-1.5 relative overflow-hidden">
+        <div class="flex-1 min-w-0">
+          <span class="text-[8.5px] uppercase font-extrabold text-[#c61a2b] block truncate">Jefes de Tramo</span>
+          <h3 class="text-xs font-bold text-[#1b2149] truncate">Pepe</h3>
+          <a href="tel:606181049" class="text-xs font-mono font-bold text-slate-700 block mt-0.5 hover:text-[#c61a2b]">606 18 10 49</a>
+        </div>
+        <div class="qr-code shrink-0 bg-white p-1 rounded border border-slate-200 shadow-2xs" data-tel="tel:606181049"></div>
+      </div>
+
+      <!-- 4. Francis -->
+      <div class="print-card bg-slate-50 rounded-lg p-2 border border-slate-200 flex items-center justify-between gap-1.5 relative overflow-hidden">
+        <div class="flex-1 min-w-0">
+          <span class="text-[8.5px] uppercase font-extrabold text-[#1b2149] block truncate">Equipo de Rescate</span>
+          <h3 class="text-xs font-bold text-[#1b2149] truncate">Francis</h3>
+          <a href="tel:606374988" class="text-xs font-mono font-bold text-slate-700 block mt-0.5 hover:text-[#c61a2b]">606 37 49 88</a>
+        </div>
+        <div class="qr-code shrink-0 bg-white p-1 rounded border border-slate-200 shadow-2xs" data-tel="tel:606374988"></div>
+      </div>
+
+      <!-- 5. Jesús Ramírez -->
+      <div class="print-card bg-slate-50 rounded-lg p-2 border border-slate-200 flex items-center justify-between gap-1.5 relative overflow-hidden">
+        <div class="flex-1 min-w-0">
+          <span class="text-[8.5px] uppercase font-extrabold text-[#1b2149] block truncate">Equipo de Rescate</span>
+          <h3 class="text-xs font-bold text-[#1b2149] truncate">Jesús Ramírez</h3>
+          <a href="tel:629349789" class="text-xs font-mono font-bold text-slate-700 block mt-0.5 hover:text-[#c61a2b]">629 34 97 89</a>
+        </div>
+        <div class="qr-code shrink-0 bg-white p-1 rounded border border-slate-200 shadow-2xs" data-tel="tel:629349789"></div>
+      </div>
+
+      <!-- 6. Sergio (Jefe Infantil) -->
+      <div class="print-card bg-slate-50 rounded-lg p-2 border border-slate-200 flex items-center justify-between gap-1.5 relative overflow-hidden">
+        <div class="flex-1 min-w-0">
+          <span class="text-[8.5px] uppercase font-extrabold text-amber-700 block truncate">Jefe Tramo Sáb. Infantil</span>
+          <h3 class="text-xs font-bold text-[#1b2149] truncate">Sergio</h3>
+          <a href="tel:663091369" class="text-xs font-mono font-bold text-slate-700 block mt-0.5 hover:text-[#c61a2b]">663 09 13 69</a>
+        </div>
+        <div class="qr-code shrink-0 bg-white p-1 rounded border border-slate-200 shadow-2xs" data-tel="tel:663091369"></div>
+      </div>
+
+      <!-- 7. Lina -->
+      <div class="print-card bg-slate-50 rounded-lg p-2 border border-slate-200 flex items-center justify-between gap-1.5 relative overflow-hidden">
+        <div class="flex-1 min-w-0">
+          <span class="text-[8.5px] uppercase font-extrabold text-amber-700 block truncate">Jefe Tramo Sáb. Infantil</span>
+          <h3 class="text-xs font-bold text-[#1b2149] truncate">Lina</h3>
+          <a href="tel:660988600" class="text-xs font-mono font-bold text-slate-700 block mt-0.5 hover:text-[#c61a2b]">660 98 86 00</a>
+        </div>
+        <div class="qr-code shrink-0 bg-white p-1 rounded border border-slate-200 shadow-2xs" data-tel="tel:660988600"></div>
+      </div>
+
+      <!-- 8. Sergio (Rescate Infantil) -->
+      <div class="print-card bg-slate-50 rounded-lg p-2 border border-slate-200 flex items-center justify-between gap-1.5 relative overflow-hidden">
+        <div class="flex-1 min-w-0">
+          <span class="text-[8.5px] uppercase font-extrabold text-amber-800 block truncate">Rescate Sáb. Infantil</span>
+          <h3 class="text-xs font-bold text-[#1b2149] truncate">Sergio</h3>
+          <a href="tel:663091369" class="text-xs font-mono font-bold text-slate-700 block mt-0.5 hover:text-[#c61a2b]">663 09 13 69</a>
+        </div>
+        <div class="qr-code shrink-0 bg-white p-1 rounded border border-slate-200 shadow-2xs" data-tel="tel:663091369"></div>
+      </div>
+
+      <!-- 9. Yisu (Rescate Infantil) -->
+      <div class="print-card bg-slate-50 rounded-lg p-2 border border-slate-200 flex items-center justify-between gap-1.5 relative overflow-hidden">
+        <div class="flex-1 min-w-0">
+          <span class="text-[8.5px] uppercase font-extrabold text-amber-800 block truncate">Rescate Sáb. Infantil</span>
+          <h3 class="text-xs font-bold text-[#1b2149] truncate">Yisu</h3>
+          <a href="tel:622775257" class="text-xs font-mono font-bold text-slate-700 block mt-0.5 hover:text-[#c61a2b]">622 77 52 57</a>
+        </div>
+        <div class="qr-code shrink-0 bg-white p-1 rounded border border-slate-200 shadow-2xs" data-tel="tel:622775257"></div>
+      </div>
+
+      <!-- 10. Rafa Pérez -->
+      <div class="print-card bg-slate-50 rounded-lg p-2 border border-slate-200 flex items-center justify-between gap-1.5 relative overflow-hidden">
+        <div class="flex-1 min-w-0">
+          <span class="text-[8.5px] uppercase font-extrabold text-[#c61a2b] block truncate">Jefe Avituallamiento</span>
+          <h3 class="text-xs font-bold text-[#1b2149] truncate">Rafa Pérez</h3>
+          <a href="tel:629029649" class="text-xs font-mono font-bold text-slate-700 block mt-0.5 hover:text-[#c61a2b]">629 02 96 49</a>
+        </div>
+        <div class="qr-code shrink-0 bg-white p-1 rounded border border-slate-200 shadow-2xs" data-tel="tel:629029649"></div>
+      </div>
+
+      <!-- 11. Rafa Rodríguez -->
+      <div class="print-card bg-slate-50 rounded-lg p-2 border border-slate-200 flex items-center justify-between gap-1.5 relative overflow-hidden">
+        <div class="flex-1 min-w-0">
+          <span class="text-[8.5px] uppercase font-extrabold text-[#c61a2b] block truncate">Jefe de Escobas</span>
+          <h3 class="text-xs font-bold text-[#1b2149] truncate">Rafa Rodríguez</h3>
+          <a href="tel:658985470" class="text-xs font-mono font-bold text-slate-700 block mt-0.5 hover:text-[#c61a2b]">658 98 54 70</a>
+        </div>
+        <div class="qr-code shrink-0 bg-white p-1 rounded border border-slate-200 shadow-2xs" data-tel="tel:658985470"></div>
+      </div>
+
+      <!-- 12. Rafa Girona -->
+      <div class="print-card bg-slate-50 rounded-lg p-2 border border-slate-200 flex items-center justify-between gap-1.5 relative overflow-hidden">
+        <div class="flex-1 min-w-0">
+          <span class="text-[8.5px] uppercase font-extrabold text-emerald-700 block truncate">Guías Senderismo</span>
+          <h3 class="text-xs font-bold text-[#1b2149] truncate">Rafa Girona <span class="text-[10px] font-medium text-slate-500">(Cabeza)</span></h3>
+          <a href="tel:656805659" class="text-xs font-mono font-bold text-slate-700 block mt-0.5 hover:text-[#c61a2b]">656 80 56 59</a>
+        </div>
+        <div class="qr-code shrink-0 bg-white p-1 rounded border border-slate-200 shadow-2xs" data-tel="tel:656805659"></div>
+      </div>
+
+      <!-- 13. Alejandro -->
+      <div class="print-card bg-slate-50 rounded-lg p-2 border border-slate-200 flex items-center justify-between gap-1.5 relative overflow-hidden">
+        <div class="flex-1 min-w-0">
+          <span class="text-[8.5px] uppercase font-extrabold text-emerald-700 block truncate">Guías Senderismo</span>
+          <h3 class="text-xs font-bold text-[#1b2149] truncate">Alejandro <span class="text-[10px] font-medium text-slate-500">(Medio)</span></h3>
+          <a href="tel:609293339" class="text-xs font-mono font-bold text-slate-700 block mt-0.5 hover:text-[#c61a2b]">609 29 33 39</a>
+        </div>
+        <div class="qr-code shrink-0 bg-white p-1 rounded border border-slate-200 shadow-2xs" data-tel="tel:609293339"></div>
+      </div>
+
+      <!-- 14. Rafa Argote -->
+      <div class="print-card bg-slate-50 rounded-lg p-2 border border-slate-200 flex items-center justify-between gap-1.5 relative overflow-hidden">
+        <div class="flex-1 min-w-0">
+          <span class="text-[8.5px] uppercase font-extrabold text-emerald-700 block truncate">Guías Senderismo</span>
+          <h3 class="text-xs font-bold text-[#1b2149] truncate">Rafa Argote <span class="text-[10px] font-medium text-slate-500">(Cierre)</span></h3>
+          <a href="tel:650455763" class="text-xs font-mono font-bold text-slate-700 block mt-0.5 hover:text-[#c61a2b]">650 45 57 63</a>
+        </div>
+        <div class="qr-code shrink-0 bg-white p-1 rounded border border-slate-200 shadow-2xs" data-tel="tel:650455763"></div>
+      </div>
+
+      <!-- 15. Dani (Dirección) -->
+      <div class="print-card bg-[#fffde8] rounded-lg p-2 border border-[#e8e29b] flex items-center justify-between gap-1.5 relative overflow-hidden">
+        <div class="flex-1 min-w-0">
+          <span class="text-[8.5px] uppercase font-extrabold text-[#c61a2b] block truncate">Dirección / Centro Mando</span>
+          <h3 class="text-xs font-bold text-[#1b2149] truncate">Dani</h3>
+          <a href="tel:651533735" class="text-xs font-mono font-bold text-[#1b2149] block mt-0.5 hover:text-[#c61a2b]">651 53 37 35</a>
+        </div>
+        <div class="qr-code shrink-0 bg-white p-1 rounded border border-slate-200 shadow-2xs" data-tel="tel:651533735"></div>
+      </div>
+
+      <!-- 16. Yisu (Dirección) -->
+      <div class="print-card bg-[#fffde8] rounded-lg p-2 border border-[#e8e29b] flex items-center justify-between gap-1.5 relative overflow-hidden">
+        <div class="flex-1 min-w-0">
+          <span class="text-[8.5px] uppercase font-extrabold text-[#c61a2b] block truncate">Dirección / Centro Mando</span>
+          <h3 class="text-xs font-bold text-[#1b2149] truncate">Yisu</h3>
+          <a href="tel:622775257" class="text-xs font-mono font-bold text-[#1b2149] block mt-0.5 hover:text-[#c61a2b]">622 77 52 57</a>
+        </div>
+        <div class="qr-code shrink-0 bg-white p-1 rounded border border-slate-200 shadow-2xs" data-tel="tel:622775257"></div>
+      </div>
+
+    </div>
+
+    <!-- Document Footer -->
+    <footer class="mt-3 pt-2 border-t border-slate-200 flex justify-between items-center text-[9.5px] text-slate-500 font-medium">
+      <div class="flex items-center gap-1.5">
+        <span class="w-1.5 h-1.5 rounded-full bg-[#c61a2b]"></span>
+        <span>5 Califa Mountain Festival</span>
+      </div>
+      <span>Listado de Organización y Seguridad</span>
+      <span>Impresión A4 Vertical</span>
+    </footer>
+
+  </div>
+
+  <script>
+    // Initialize QR Code generation for each entry automatically
+    window.addEventListener('DOMContentLoaded', () => {
+      const qrContainers = document.querySelectorAll('.qr-code');
+      
+      qrContainers.forEach(container => {
+        const telURI = container.getAttribute('data-tel');
+        if (telURI) {
+          // Format numeric clean tel URI
+          const cleanTel = telURI.replace(/\s+/g, '');
+          new QRCode(container, {
+            text: cleanTel,
+            width: 48,
+            height: 48,
+            colorDark: "#1b2149",
+            colorLight: "#ffffff",
+            correctLevel: QRCode.CorrectLevel.M
+          });
+        }
+      });
+    });
+  </script>
+</body>
+</html>

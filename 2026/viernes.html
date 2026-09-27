@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Consulta de Rutas y Waypoints</title>
+  <link rel="stylesheet" href="style2.css">
+
+  <!-- Tailwind CSS CDN -->
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  
+  <!-- JSZip para descomprimir ficheros KMZ en el navegador -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+  
+  <style>
+    .gpx-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+    }
+    .gpx-table th, .gpx-table td {
+      border: 1px solid #e5e7eb;
+      padding: 10px;
+      text-align: left;
+      font-size: 14px;
+    }
+    .gpx-table th {
+      background-color: #f9fafb;
+      font-weight: 600;
+    }
+    .map-btn {
+      background-color: #4285F4;
+      color: white;
+      padding: 6px 12px;
+      text-decoration: none;
+      border-radius: 4px;
+      font-size: 13px;
+      display: inline-block;
+      font-weight: 500;
+    }
+    .map-btn:hover {
+      background-color: #3367D6;
+    }
+    .custom-emoji-marker {
+      background: transparent !important;
+      border: none !important;
+    }
+  </style>
+  <script src="./navbar.js" defer></script>
+</head>
+<body class="bg-gray-50 text-gray-900">
+  <navbar-header></navbar-header>
+  <div class="max-w-7xl mx-auto p-6 bg-white shadow-md rounded-lg my-10">
+    <h2 class="text-2xl font-bold mb-6 text-primary">Consulta de Tiempos de Ruta y Waypoints</h2>
+    
+    <!-- Formulario Principal de Consulta -->
+    <div class="space-y-4 bg-gray-50 p-4 border rounded-lg">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
+        <div class="md:col-span-2">
+          <label for="gpxUrl" class="block font-semibold mb-1">URL del Archivo GPX:</label>
+          <div class="flex gap-2">
+            <input type="url" id="gpxUrl" placeholder="gpx/02-etapa1.gpx" class="w-full border border-gray-300 p-2 rounded-md focus:ring-2 focus:ring-indigo-500 bg-white text-sm">
+            <button type="button" id="loadUrlBtn" class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-4 py-2 rounded-md text-sm whitespace-nowrap">Cargar URL</button>
+          </div>
+        </div>
+        <div>
+          <label for="gpxFile" class="block font-semibold mb-1">O subir archivo local:</label>
+          <input type="file" id="gpxFile" accept=".gpx, .kmz, .kml" class="block w-full text-xs text-gray-500 file:py-2 file:px-3 file:rounded-md file:border-0 file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100">
+        </div>
+      </div>
+
+      <!-- Parámetros fijos de solo lectura -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2 border-t">
+        <div>
+          <label class="block font-semibold mb-1 text-gray-600 text-xs">Hora de salida (Fija):</label>
+          <input type="time" id="startTime" value="20:00" disabled class="w-full border border-gray-300 p-2 rounded-md bg-gray-100 text-gray-600 cursor-not-allowed">
+        </div>
+        <div>
+          <label class="block font-semibold mb-1 text-gray-600 text-xs">Ritmo 1º (min/km - Fijo):</label>
+          <input type="number" id="paceFirst" value="4.5" disabled class="w-full border border-gray-300 p-2 rounded-md bg-gray-100 text-gray-600 cursor-not-allowed">
+        </div>
+        <div>
+          <label class="block font-semibold mb-1 text-gray-600 text-xs">Ritmo último (min/km - Fijo):</label>
+          <input type="number" id="paceLast" value="12.0" disabled class="w-full border border-gray-300 p-2 rounded-md bg-gray-100 text-gray-600 cursor-not-allowed">
+        </div>
+      </div>
+    </div>
+
+    <!-- Panel de Resumen General -->
+    <div id="summaryPanel" class="hidden mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div>
+        <p class="text-sm text-gray-600 font-medium">Distancia y Desnivel:</p>
+        <p id="resTotalDist" class="text-base font-bold text-gray-800">-</p>
+        <p id="resElevation" class="text-xs text-gray-600 mt-1">D+: - | D-: -</p>
+      </div>
+      <div>
+        <p class="text-sm text-gray-600 font-medium">1º Participante (Meta):</p>
+        <p id="resFirstTime" class="text-sm text-gray-800">Duración: -</p>
+        <p id="resFirstHour" class="text-lg font-bold text-indigo-600">Llegada: -</p>
+      </div>
+      <div>
+        <p class="text-sm text-gray-600 font-medium">Último Participante (Meta):</p>
+        <p id="resLastTime" class="text-sm text-gray-800">Duración: -</p>
+        <p id="resLastHour" class="text-lg font-bold text-indigo-600">Llegada: -</p>
+      </div>
+      <div>
+        <p class="text-sm text-gray-600 font-medium">Modo Consulta:</p>
+        <p class="text-xs text-gray-500 mt-1">🔒 Mapa y datos bloqueados para estricta consulta.</p>
+      </div>
+    </div>
+
+    <!-- Contenedor del Mapa -->
+    <div style="width: 100%; height: 450px; margin-top: 25px; border-radius: 8px; border: 1px solid #d1d5db; position: relative; overflow: hidden;">
+      <div id="map" style="width: 100%; height: 100%; position: absolute; top: 0; left: 0; z-index: 1;"></div>
+    </div>
+
+    <!-- Sección de Gráfica de Desnivel con Filtros -->
+    <div id="elevationSection" class="hidden mt-8 p-4 bg-white border border-gray-200 rounded-lg shadow-sm space-y-4">
+      <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b pb-3">
+        <h3 class="text-lg font-bold text-gray-800">Perfil de Desnivel y Pendientes</h3>
+        <div class="flex flex-wrap items-center gap-4 text-xs font-medium text-gray-700">
+          <div class="flex items-center space-x-1">
+            <span class="inline-block w-3 h-3 rounded-full bg-green-500"></span>
+            <label for="thresholdMedium">Media (&le;):</label>
+            <input type="number" id="thresholdMedium" value="5" min="1" max="30" class="w-14 border p-1 rounded text-center">
+            <span>%</span>
+          </div>
+          <div class="flex items-center space-x-1">
+            <span class="inline-block w-3 h-3 rounded-full bg-red-500"></span>
+            <label for="thresholdHigh">Alta (&gt;):</label>
+            <input type="number" id="thresholdHigh" value="12" min="2" max="40" class="w-14 border p-1 rounded text-center">
+            <span>%</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="p-3 bg-gray-50 border border-gray-200 rounded-md text-xs space-y-2">
+        <div class="flex justify-between items-center">
+          <span class="font-bold text-gray-700">📍 Mostrar Waypoints en el perfil por tipo:</span>
+          <div class="space-x-2">
+            <button type="button" id="selectAllWpts" class="text-indigo-600 hover:underline font-semibold">Seleccionar todos</button>
+            <span>|</span>
+            <button type="button" id="deselectAllWpts" class="text-gray-600 hover:underline font-semibold">Deseleccionar todos</button>
+          </div>
+        </div>
+        <div id="wptFilterCheckboxes" class="flex flex-wrap gap-x-4 gap-y-2 pt-1"></div>
+      </div>
+
+      <div class="relative w-full h-72 bg-gray-50 border border-gray-200 rounded overflow-hidden">
+        <canvas id="elevationCanvas" class="w-full h-full"></canvas>
+      </div>
+    </div>
+
+    <!-- Botones de Descarga -->
+    <div class="mt-6 flex flex-wrap gap-3">
+      <button id="downloadBtn" class="btn-primary hidden" style="background-color: #10B981;">📥 Descargar GPX Actualizado</button>
+      <button id="downloadJsonBtn" class="btn-primary hidden" style="background-color: #6366F1;">📄 Descargar JSON</button>
+      <button id="downloadCsvBtn" class="btn-primary hidden" style="background-color: #F59E0B;">📊 Descargar CSV / Excel</button>
+    </div>
+
+    <!-- Cabecera de Tabla y Filtros -->
+    <div class="mt-10 mb-4 space-y-3">
+      <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <h3 class="text-xl font-bold">Tabla de Waypoints y Tiempos de Paso</h3>
+        <div class="w-full md:w-72">
+          <input type="text" id="tableSearchInput" placeholder="🔍 Buscar por nombre o responsable..." class="w-full border border-gray-300 rounded-md p-2 text-sm focus:ring-2 focus:ring-indigo-500 bg-white">
+        </div>
+      </div>
+      
+      <div class="p-3 bg-gray-50 border border-gray-200 rounded-md text-xs space-y-2">
+        <div class="flex justify-between items-center">
+          <span class="font-bold text-gray-700">📋 Filtrar Tabla por tipo:</span>
+          <div class="space-x-2">
+            <button type="button" id="selectAllTable" class="text-indigo-600 hover:underline font-semibold">Seleccionar todos</button>
+            <span>|</span>
+            <button type="button" id="deselectAllTable" class="text-gray-600 hover:underline font-semibold">Deseleccionar todos</button>
+          </div>
+        </div>
+        <div id="tableFilterCheckboxes" class="flex flex-wrap gap-x-4 gap-y-2 pt-1"></div>
+      </div>
+    </div>
+
+    <div class="overflow-x-auto">
+      <table id="waypointsTable" class="gpx-table">
+        <thead>
+          <tr>
+            <th>Waypoint / Responsable</th>
+            <th>Símbolo</th>
+            <th>Distancia</th>
+            <th>Tiempo 1º</th>
+            <th>Hora 1º</th>
+            <th>Tiempo Últ.</th>
+            <th>Hora Últ.</th>
+            <th>Coordenadas</th>
+            <th>Maps</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td colspan="9" class="text-center text-gray-500">Carga un archivo o URL para consultar los datos</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script>
+    const osmLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, attribution: '© OpenStreetMap contributors' });
+    const satelliteLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', { maxZoom: 19, attribution: 'Tiles &copy; Esri' });
+    const positronLayer = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', { maxZoom: 19, attribution: '&copy; CARTO' });
+
+    const map = L.map('map', { center: [40.4168, -3.7038], zoom: 6, layers: [osmLayer] });
+    L.control.layers({ "Calles (OpenStreetMap)": osmLayer, "Satélite (ESRI)": satelliteLayer, "Minimalista (CartoDB)": positronLayer }).addTo(map);
+
+    let featureGroup = L.layerGroup().addTo(map);
+    let generatedGpxString = null; 
+    let generatedWaypointsData = [];
+    let outputFilenameBase = 'ruta';
+    let currentGpxDoc = null; 
+    let trackProfileData = []; 
+    let lastTotalGain = 0;
+    let lastTotalLoss = 0;
+
+    const symbolIcons = {
+      'Waypoint': '📍', 'Ambulancia': '🚑', 'Peligro': '⚠️', 'Avituallamiento': '🍏',
+      'Agua': '💧', 'Coche evacuacion': '🚙', 'Helipuerto': '🚁', 'Aparcamiento': '🅿️',
+      'Persona': '👤', 'Cruce': '🔀', 'Desvio': '↗️', 'Precaucion': '⚡',
+      'Alojamiento': '🏨', 'Inicio': '🚀', 'Fin': '🏁'
+    };
+
+    let activeWptTypes = new Set(Object.keys(symbolIcons));
+    let activeTableTypes = new Set(Object.keys(symbolIcons));
+
+    function getSymbolIcon(sym) { return symbolIcons[sym] || '📍'; }
+
+    function cleanHtmlText(htmlStr) {
+      if (!htmlStr) return '';
+      const tempDiv = document.createElement('div');
+      tempDiv.innerHTML = htmlStr;
+      return tempDiv.textContent || tempDiv.innerText || htmlStr.replace(/<[^>]*>?/gm, '').trim();
+    }
+
+    function convertKmlToGpxXml(kmlDoc) {
+      const parser = new DOMParser();
+      const gpxDoc = parser.parseFromString(`<?xml version="1.0" encoding="UTF-8"?><gpx version="1.1" creator="GpxUtils"><trk><name>Ruta</name><trkseg></trkseg></trk></gpx>`, "application/xml");
+      const trkseg = gpxDoc.getElementsByTagName('trkseg')[0];
+
+      const lineStrings = kmlDoc.getElementsByTagName('LineString');
+      if (lineStrings.length > 0) {
+        for (let ls = 0; ls < lineStrings.length; ls++) {
+          const coordEl = lineStrings[ls].getElementsByTagName('coordinates')[0];
+          if (coordEl) {
+            coordEl.textContent.trim().split(/\s+/).forEach(cStr => {
+              const parts = cStr.split(',');
+              if (parts.length >= 2) {
+                const trkpt = gpxDoc.createElement('trkpt');
+                trkpt.setAttribute('lat', parts[1]);
+                trkpt.setAttribute('lon', parts[0]);
+                const eleEl = gpxDoc.createElement('ele');
+                eleEl.textContent = parts[2] || '0';
+                trkpt.appendChild(eleEl);
+                trkseg.appendChild(trkpt);
+              }
+            });
+          }
+        }
+      }
+
+      const placemarks = kmlDoc.getElementsByTagName('Placemark');
+      const gpxRoot = gpxDoc.documentElement;
+      for (let p = 0; p < placemarks.length; p++) {
+        const pointEl = placemarks[p].getElementsByTagName('Point')[0];
+        if (pointEl) {
+          const coordEl = pointEl.getElementsByTagName('coordinates')[0];
+          if (coordEl) {
+            const parts = coordEl.textContent.trim().split(/[\s,]+/);
+            if (parts.length >= 2) {
+              const nameEl = placemarks[p].getElementsByTagName('name')[0];
+              const name = nameEl ? nameEl.textContent.trim() : `Punto ${p+1}`;
+              const descEl = placemarks[p].getElementsByTagName('description')[0];
+              const desc = cleanHtmlText(descEl ? descEl.textContent.trim() : '');
+
+              let finalTitle = name;
+              if (desc && desc !== name && !name.toUpperCase().includes(desc.toUpperCase())) {
+                finalTitle = `${name} - ${desc}`;
+              }
+
+              const wptEl = gpxDoc.createElement('wpt');
+              wptEl.setAttribute('lat', parts[1]);
+              wptEl.setAttribute('lon', parts[0]);
+
+              const wNameEl = gpxDoc.createElement('name');
+              wNameEl.textContent = finalTitle;
+              wptEl.appendChild(wNameEl);
+
+              const symEl = gpxDoc.createElement('sym');
+              symEl.textContent = 'Waypoint';
+              wptEl.appendChild(symEl);
+
+              gpxRoot.appendChild(wptEl);
+            }
+          }
+        }
+      }
+      return gpxDoc;
+    }
+
+    document.getElementById('thresholdMedium').addEventListener('input', () => { if (trackProfileData.length > 0) drawElevationChart(); });
+    document.getElementById('thresholdHigh').addEventListener('input', () => { if (trackProfileData.length > 0) drawElevationChart(); });
+    document.getElementById('tableSearchInput').addEventListener('input', () => renderMapAndTable());
+
+    document.getElementById('selectAllWpts').addEventListener('click', () => {
+      document.querySelectorAll('#wptFilterCheckboxes input[type="checkbox"]').forEach(cb => { cb.checked = true; activeWptTypes.add(cb.value); });
+      if (trackProfileData.length > 0) drawElevationChart();
+    });
+    document.getElementById('deselectAllWpts').addEventListener('click', () => {
+      document.querySelectorAll('#wptFilterCheckboxes input[type="checkbox"]').forEach(cb => { cb.checked = false; activeWptTypes.delete(cb.value); });
+      if (trackProfileData.length > 0) drawElevationChart();
+    });
+    document.getElementById('selectAllTable').addEventListener('click', () => {
+      document.querySelectorAll('#tableFilterCheckboxes input[type="checkbox"]').forEach(cb => { cb.checked = true; activeTableTypes.add(cb.value); });
+      renderMapAndTable();
+    });
+    document.getElementById('deselectAllTable').addEventListener('click', () => {
+      document.querySelectorAll('#tableFilterCheckboxes input[type="checkbox"]').forEach(cb => { cb.checked = false; activeTableTypes.delete(cb.value); });
+      renderMapAndTable();
+    });
+
+    function initFilterCheckboxes() {
+      const profileContainer = document.getElementById('wptFilterCheckboxes');
+      profileContainer.innerHTML = '';
+      Object.keys(symbolIcons).forEach(sym => {
+        const label = document.createElement('label');
+        label.className = 'flex items-center space-x-1.5 cursor-pointer font-medium text-gray-700';
+        label.innerHTML = `<input type="checkbox" value="${sym}" checked class="w-4 h-4 text-indigo-600 rounded border-gray-300"><span>${symbolIcons[sym]} ${sym}</span>`;
+        label.querySelector('input').addEventListener('change', function() {
+          if (this.checked) activeWptTypes.add(sym); else activeWptTypes.delete(sym);
+          if (trackProfileData.length > 0) drawElevationChart();
+        });
+        profileContainer.appendChild(label);
+      });
+
+      const tableContainer = document.getElementById('tableFilterCheckboxes');
+      tableContainer.innerHTML = '';
+      Object.keys(symbolIcons).forEach(sym => {
+        const label = document.createElement('label');
+        label.className = 'flex items-center space-x-1.5 cursor-pointer font-medium text-gray-700';
+        label.innerHTML = `<input type="checkbox" value="${sym}" checked class="w-4 h-4 text-indigo-600 rounded border-gray-300"><span>${symbolIcons[sym]} ${sym}</span>`;
+        label.querySelector('input').addEventListener('change', function() {
+          if (this.checked) activeTableTypes.add(sym); else activeTableTypes.delete(sym);
+          renderMapAndTable();
+        });
+        tableContainer.appendChild(label);
+      });
+    }
+
+    async function processRawText(textContent, filename) {
+      outputFilenameBase = filename.substring(0, filename.lastIndexOf('.')) || filename;
+      const lowerName = filename.toLowerCase();
+      const parser = new DOMParser();
+
+      if (lowerName.endsWith('.kmz')) {
+        const zip = new JSZip();
+        const zipContent = await zip.loadAsync(textContent);
+        let kmlText = null;
+        for (let fn in zipContent.files) {
+          if (fn.toLowerCase().endsWith('.kml')) {
+            kmlText = await zipContent.files[fn].async('string');
+            break;
+          }
+        }
+        if (!kmlText) { alert("No se encontró archivo KML dentro del KMZ."); return; }
+        currentGpxDoc = convertKmlToGpxXml(parser.parseFromString(kmlText, "application/xml"));
+      } else if (lowerName.endsWith('.kml')) {
+        currentGpxDoc = convertKmlToGpxXml(parser.parseFromString(textContent, "application/xml"));
+      } else {
+        currentGpxDoc = parser.parseFromString(textContent, "application/xml");
+      }
+
+      await executeAutomaticProcessing();
+    }
+
+    // Carga mediante URL
+    document.getElementById('loadUrlBtn').addEventListener('click', async () => {
+      const url = document.getElementById('gpxUrl').value.trim();
+      if (!url) { alert("Por favor, introduce una URL válida."); return; }
+      try {
+        const response = await fetch(url);
+        if (!response.ok) throw new Error("No se pudo descargar el archivo de la URL.");
+        const text = await response.text();
+        const filename = url.split('/').pop().split('?')[0] || "ruta.gpx";
+        await processRawText(text, filename);
+      } catch (err) {
+        console.error(err);
+        alert("Error al cargar la URL (es posible que el servidor remoto bloquee por políticas CORS). Se recomienda usar subida local si falla.");
+      }
+    });
+
+    // Carga mediante archivo local
+    document.getElementById('gpxFile').addEventListener('change', async function(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      if (file.name.toLowerCase().endsWith('.kmz')) {
+        await processRawText(file, file.name);
+      } else {
+        const text = await file.text();
+        await processRawText(text, file.name);
+      }
+    });
+
+    async function executeAutomaticProcessing() {
+      if (!currentGpxDoc) return;
+      const startTime = document.getElementById('startTime').value;
+      const paceFirst = parseFloat(document.getElementById('paceFirst').value);
+      const paceLast = parseFloat(document.getElementById('paceLast').value);
+
+      const trkpts = currentGpxDoc.getElementsByTagName('trkpt');
+      if (!trkpts.length) { alert("El archivo no contiene puntos de track válidos."); return; }
+
+      // Extraer perfil de elevación nativo sin llamadas externas de ajuste
+      trackProfileData = [];
+      let accumulatedDist = 0;
+      lastTotalGain = 0;
+      lastTotalLoss = 0;
+
+      let prevLat = parseFloat(trkpts[0].getAttribute('lat'));
+      let prevLon = parseFloat(trkpts[0].getAttribute('lon'));
+      let prevEle = parseFloat((trkpts[0].getElementsByTagName('ele')[0] || {}).textContent) || 0;
+
+      trackProfileData.push({ dist: 0, ele: prevEle, slope: 0 });
+
+      for (let i = 1; i < trkpts.length; i++) {
+        const currLat = parseFloat(trkpts[i].getAttribute('lat'));
+        const currLon = parseFloat(trkpts[i].getAttribute('lon'));
+        const currEle = parseFloat((trkpts[i].getElementsByTagName('ele')[0] || {}).textContent) || prevEle;
+
+        const diffEle = currEle - prevEle;
+        if (diffEle > 0) lastTotalGain += diffEle; else lastTotalLoss += Math.abs(diffEle);
+
+        const dDist = calculateDistance(prevLat, prevLon, currLat, currLon);
+        accumulatedDist += dDist;
+        const slope = dDist > 0 ? (diffEle / dDist) * 100 : 0;
+
+        trackProfileData.push({ dist: accumulatedDist / 1000, ele: currEle, slope: slope });
+        prevLat = currLat; prevLon = currLon; prevEle = currEle;
+      }
+
+      document.getElementById('resTotalDist').textContent = `${(accumulatedDist / 1000).toFixed(2)} km`;
+      document.getElementById('resElevation').textContent = `D+: ${Math.round(lastTotalGain)}m | D-: ${Math.round(lastTotalLoss)}m`;
+      document.getElementById('elevationSection').classList.remove('hidden');
+
+      // Procesar Waypoints automáticamente
+      generatedWaypointsData = [];
+      const wpts = currentGpxDoc.getElementsByTagName('wpt');
+      for (let i = 0; i < wpts.length; i++) {
+        const lat = parseFloat(wpts[i].getAttribute('lat'));
+        const lon = parseFloat(wpts[i].getAttribute('lon'));
+        const nameEl = wpts[i].getElementsByTagName('name')[0];
+        const wptName = nameEl ? nameEl.textContent.trim() : `Waypoint ${i + 1}`;
+        const symEl = wpts[i].getElementsByTagName('sym')[0];
+        const wptSym = symEl ? symEl.textContent.trim() : 'Waypoint';
+
+        const distMeters = findWaypointDistanceAlongTrack(lat, lon, trkpts);
+        const distKmVal = distMeters / 1000;
+
+        generatedWaypointsData.push({
+          lat: lat, lon: lon, name: wptName, sym: wptSym,
+          distKmNum: distKmVal, distKm: `${distKmVal.toFixed(2)} km`,
+          timeFirstStr: formatTime(distKmVal * paceFirst),
+          hourFirstStr: addMinutesToTime(startTime, distKmVal * paceFirst),
+          timeLastStr: formatTime(distKmVal * paceLast),
+          hourLastStr: addMinutesToTime(startTime, distKmVal * paceLast)
+        });
+      }
+
+      generatedWaypointsData.sort((a, b) => a.distKmNum - b.distKmNum);
+
+      const totalDistanceKm = accumulatedDist / 1000;
+      document.getElementById('resFirstTime').textContent = `Duración: ${formatTime(totalDistanceKm * paceFirst)}`;
+      document.getElementById('resFirstHour').textContent = `Llegada: ${addMinutesToTime(startTime, totalDistanceKm * paceFirst)}`;
+      document.getElementById('resLastTime').textContent = `Duración: ${formatTime(totalDistanceKm * paceLast)}`;
+      document.getElementById('resLastHour').textContent = `Llegada: ${addMinutesToTime(startTime, totalDistanceKm * paceLast)}`;
+      document.getElementById('summaryPanel').classList.remove('hidden');
+
+      renderMapAndTable();
+      drawElevationChart();
+
+      document.getElementById('downloadBtn').classList.remove('hidden');
+      document.getElementById('downloadJsonBtn').classList.remove('hidden');
+      document.getElementById('downloadCsvBtn').classList.remove('hidden');
+      updateGpxStringAndRefresh();
+    }
+
+    function calculateDistance(lat1, lon1, lat2, lon2) {
+      const R = 6371e3;
+      const rad = Math.PI / 180;
+      const dLat = (lat2 - lat1) * rad;
+      const dLon = (lon2 - lon1) * rad;
+      const a = Math.sin(dLat/2) * Math.sin(dLat/2) + Math.cos(lat1 * rad) * Math.cos(lat2 * rad) * Math.sin(dLon/2) * Math.sin(dLon/2);
+      return R * (2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)));
+    }
+
+    function formatTime(totalMinutes) {
+      const hrs = Math.floor(totalMinutes / 60);
+      const mins = Math.floor(totalMinutes % 60);
+      const secs = Math.floor((totalMinutes * 60) % 60);
+      return hrs > 0 ? `${hrs}h ${mins}m` : `${mins}m ${secs}s`;
+    }
+
+    function addMinutesToTime(startTimeStr, totalMinutes) {
+      const [h, m] = startTimeStr.split(':').map(Number);
+      const date = new Date();
+      date.setHours(h, m + totalMinutes, 0, 0);
+      return date.toTimeString().substring(0, 5);
+    }
+
+    function findWaypointDistanceAlongTrack(wptLat, wptLon, trkpts) {
+      let minDist = Infinity, accumulatedAtWpt = 0, currentAcc = 0;
+      let prevLat = parseFloat(trkpts[0].getAttribute('lat'));
+      let prevLon = parseFloat(trkpts[0].getAttribute('lon'));
+
+      for (let i = 0; i < trkpts.length; i++) {
+        const currLat = parseFloat(trkpts[i].getAttribute('lat'));
+        const currLon = parseFloat(trkpts[i].getAttribute('lon'));
+        if (i > 0) currentAcc += calculateDistance(prevLat, prevLon, currLat, currLon);
+        const distToWpt = Math.pow(currLat - wptLat, 2) + Math.pow(currLon - wptLon, 2);
+        if (distToWpt < minDist) { minDist = distToWpt; accumulatedAtWpt = currentAcc; }
+        prevLat = currLat; prevLon = currLon;
+      }
+      return accumulatedAtWpt;
+    }
+
+    function drawElevationChart() {
+      const canvas = document.getElementById('elevationCanvas');
+      if (!canvas || trackProfileData.length === 0) return;
+      const ctx = canvas.getContext('2d');
+      canvas.width = canvas.parentElement.clientWidth;
+      canvas.height = canvas.parentElement.clientHeight;
+
+      const width = canvas.width, height = canvas.height, padding = 35, topReserved = 65;
+      ctx.clearRect(0, 0, width, height);
+
+      const maxDist = trackProfileData[trackProfileData.length - 1].dist || 1;
+      const elevations = trackProfileData.map(p => p.ele);
+      let minEle = Math.min(...elevations), maxEle = Math.max(...elevations);
+      if (minEle === maxEle) maxEle += 10;
+
+      const medLimit = parseFloat(document.getElementById('thresholdMedium').value) || 5;
+      const highLimit = parseFloat(document.getElementById('thresholdHigh').value) || 12;
+
+      const getX = (d) => padding + (d / maxDist) * (width - 2 * padding);
+      const getY = (e) => topReserved + (height - padding - topReserved) - ((e - minEle) / (maxEle - minEle)) * (height - padding - topReserved - 25);
+
+      ctx.strokeStyle = '#e5e7eb'; ctx.lineWidth = 1; ctx.font = '10px sans-serif'; ctx.fillStyle = '#6b7280';
+      for (let i = 0; i <= 4; i++) {
+        const eleVal = minEle + (maxEle - minEle) * (i / 4);
+        const y = getY(eleVal);
+        ctx.beginPath(); ctx.moveTo(padding, y); ctx.lineTo(width - padding, y); ctx.stroke();
+        ctx.fillText(`${Math.round(eleVal)}m`, 2, y + 3);
+      }
+
+      const baselineY = height - padding;
+      for (let i = 0; i < trackProfileData.length - 1; i++) {
+        const p1 = trackProfileData[i], p2 = trackProfileData[i + 1];
+        const x1 = getX(p1.dist), y1 = getY(p1.ele), x2 = getX(p2.dist), y2 = getY(p2.ele);
+        let color = '#22c55e', fillColor = 'rgba(34, 197, 94, 0.35)';
+        if (p2.slope > highLimit) { color = '#ef4444'; fillColor = 'rgba(239, 68, 68, 0.35)'; }
+        else if (p2.slope > medLimit) { color = '#f59e0b'; fillColor = 'rgba(245, 158, 11, 0.35)'; }
+
+        ctx.fillStyle = fillColor;
+        ctx.beginPath(); ctx.moveTo(x1, baselineY); ctx.lineTo(x1, y1); ctx.lineTo(x2 + 0.5, y2); ctx.lineTo(x2 + 0.5, baselineY); ctx.closePath(); ctx.fill();
+        ctx.strokeStyle = color; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2 + 0.5, y2); ctx.stroke();
+      }
+
+      // Dibujar waypoints en el gráfico de perfil
+      const activeWaypoints = generatedWaypointsData.filter(wp => activeWptTypes.has(wp.sym || 'Waypoint'));
+      activeWaypoints.forEach(wp => {
+        if (wp.distKmNum >= 0 && wp.distKmNum <= maxDist) {
+          const wx = getX(wp.distKmNum);
+          const wy = getY(trackProfileData.reduce((prev, curr) => Math.abs(curr.dist - wp.distKmNum) < Math.abs(prev.dist - wp.distKmNum) ? curr : prev).ele);
+          ctx.fillStyle = '#ffffff'; ctx.beginPath(); ctx.arc(wx, wy, 8, 0, 2 * Math.PI); ctx.fill();
+          ctx.lineWidth = 2; ctx.strokeStyle = '#4f46e5'; ctx.stroke();
+          ctx.font = '10px sans-serif'; ctx.textAlign = 'center'; ctx.fillText(getSymbolIcon(wp.sym), wx, wy + 3);
+        }
+      });
+    }
+
+    function renderMapAndTable() {
+      if (!currentGpxDoc) return;
+      featureGroup.clearLayers();
+
+      const trkpts = currentGpxDoc.getElementsByTagName('trkpt');
+      let trackCoords = [];
+      for (let i = 0; i < trkpts.length; i++) trackCoords.push([parseFloat(trkpts[i].getAttribute('lat')), parseFloat(trkpts[i].getAttribute('lon'))]);
+      L.polyline(trackCoords, { color: 'blue', weight: 4 }).addTo(featureGroup);
+      setTimeout(() => map.invalidateSize(), 200);
+
+      // Marcadores NO editables (sin eventos de arrastre ni edición)
+      generatedWaypointsData.forEach((wp) => {
+        const sym = wp.sym || 'Waypoint';
+        if (activeWptTypes.has(sym)) {
+          const iconEmoji = getSymbolIcon(sym);
+          const customIcon = L.divIcon({
+            className: 'custom-emoji-marker',
+            html: `<div style="font-size: 18px; background: white; border-radius: 50%; width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; box-shadow: 0 3px 8px rgba(0,0,0,0.35); border: 2px solid #fff;">${iconEmoji}</div>`,
+            iconSize: [34, 34], iconAnchor: [17, 17], popupAnchor: [0, -17]
+          });
+          const popupContent = `<div class="p-2 space-y-1 text-xs"><p class="font-bold text-sm">${iconEmoji} ${wp.name}</p><p>Distancia: ${wp.distKm}</p><p>1º: ${wp.hourFirstStr}</p><p>Últ: ${wp.hourLastStr}</p></div>`;
+          L.marker([wp.lat, wp.lon], { icon: customIcon, draggable: false }).bindPopup(popupContent).addTo(featureGroup);
+        }
+      });
+
+      const tableBody = document.querySelector('#waypointsTable tbody');
+      tableBody.innerHTML = '';
+      const searchQuery = (document.getElementById('tableSearchInput').value || "").toLowerCase().trim();
+
+      const filtered = generatedWaypointsData.filter(wp => activeTableTypes.has(wp.sym || 'Waypoint') && (!searchQuery || wp.name.toLowerCase().includes(searchQuery)));
+
+      if (filtered.length === 0) {
+        tableBody.innerHTML = `<tr><td colspan="9" class="text-center text-gray-500">No hay waypoints que coincidan.</td></tr>`;
+        return;
+      }
+
+      filtered.forEach(wp => {
+        const row = document.createElement('tr');
+        const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${wp.lat},${wp.lon}`;
+        row.innerHTML = `
+          <td><span class="font-medium text-gray-800">${wp.name}</span></td>
+          <td><span>${getSymbolIcon(wp.sym)} ${wp.sym}</span></td>
+          <td>${wp.distKm}</td>
+          <td><span class="text-gray-600">${wp.timeFirstStr}</span></td>
+          <td><span class="font-semibold text-indigo-600">${wp.hourFirstStr}</span></td>
+          <td><span class="text-gray-600">${wp.timeLastStr}</span></td>
+          <td><span class="font-semibold text-indigo-600">${wp.hourLastStr}</span></td>
+          <td class="text-xs text-gray-500">${wp.lat.toFixed(5)}, ${wp.lon.toFixed(5)}</td>
+          <td><a href="${mapsUrl}" target="_blank" class="map-btn">🗺️ Maps</a></td>
+        `;
+        tableBody.appendChild(row);
+      });
+    }
+
+    function updateGpxStringAndRefresh() {
+      if (!currentGpxDoc) return;
+      const docClone = currentGpxDoc.cloneNode(true);
+      const gpxRoot = docClone.documentElement;
+      Array.from(docClone.getElementsByTagName('wpt')).forEach(el => el.parentNode.removeChild(el));
+
+      generatedWaypointsData.forEach(wp => {
+        const wptEl = docClone.createElement('wpt');
+        wptEl.setAttribute('lat', wp.lat); wptEl.setAttribute('lon', wp.lon);
+        const nameEl = docClone.createElement('name'); nameEl.textContent = wp.name; wptEl.appendChild(nameEl);
+        const symEl = docClone.createElement('sym'); symEl.textContent = wp.sym; wptEl.appendChild(symEl);
+        const descEl = docClone.createElement('desc'); descEl.textContent = `1º: ${wp.hourFirstStr} | Últ: ${wp.hourLastStr}`; wptEl.appendChild(descEl);
+        gpxRoot.insertBefore(wptEl, gpxRoot.firstChild);
+      });
+      generatedGpxString = new XMLSerializer().serializeToString(docClone);
+    }
+
+    document.getElementById('downloadBtn').addEventListener('click', () => {
+      if (!generatedGpxString) return;
+      const blob = new Blob([generatedGpxString], { type: 'application/gpx+xml' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a'); a.href = url; a.download = `${outputFilenameBase}_tiempos.gpx`;
+      document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
+    });
+
+    document.getElementById('downloadJsonBtn').addEventListener('click', () => {
+      const blob = new Blob([JSON.stringify(generatedWaypointsData, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a'); a.href = url; a.download = `${outputFilenameBase}_waypoints.json`;
+      document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
+    });
+
+    document.getElementById('downloadCsvBtn').addEventListener('click', () => {
+      let csv = "\uFEFFWaypoint,Simbolo,Distancia,Tiempo_1º,Hora_1º,Tiempo_Último,Hora_Último,Lat,Lon\r\n";
+      generatedWaypointsData.forEach(wp => {
+        csv += `"${wp.name}",${wp.sym},${wp.distKm},${wp.timeFirstStr},${wp.hourFirstStr},${wp.timeLastStr},${wp.hourLastStr},${wp.lat.toFixed(6)},${wp.lon.toFixed(6)}\r\n`;
+      });
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a'); a.href = url; a.download = `${outputFilenameBase}_waypoints.csv`;
+      document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
+    });
+
+    initFilterCheckboxes();
+  </script>
+</body>
+</html>

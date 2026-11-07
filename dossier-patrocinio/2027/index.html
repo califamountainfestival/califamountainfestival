@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dossier de Patrocinio | Califa Mountain Festival</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Montserrat -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800;900&display=swap" rel="stylesheet">
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Montserrat', 'sans-serif'],
+                    },
+                    colors: {
+                        califa: {
+                            red: '#cc0000',
+                            yellow: '#ffcc00',
+                            black: '#111111',
+                            dark: '#1a1a1a'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Custom Animations */
+        .reveal {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: all 0.8s cubic-bezier(0.5, 0, 0, 1);
+        }
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .reveal-delay-1 { transition-delay: 100ms; }
+        .reveal-delay-2 { transition-delay: 200ms; }
+        .reveal-delay-3 { transition-delay: 300ms; }
+        .reveal-delay-4 { transition-delay: 400ms; }
+        .reveal-delay-5 { transition-delay: 500ms; }
+
+        .bg-pattern {
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        }
+        
+        .hero-clip {
+            clip-path: polygon(0 0, 100% 0, 100% 90%, 0 100%);
+        }
+        
+        .section-clip {
+            clip-path: polygon(0 5%, 100% 0, 100% 95%, 0 100%);
+        }
+        
+        .pricing-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 10px 10px -5px rgba(0, 0, 0, 0.2);
+        }
+    </style>
+</head>
+<body class="bg-califa-black text-white antialiased overflow-x-hidden selection:bg-califa-yellow selection:text-black">
+
+    <!-- HERO SECTION -->
+    <header class="relative min-h-screen flex items-center justify-center overflow-hidden bg-califa-red hero-clip">
+        <div class="absolute inset-0 z-0">
+            <!-- Split background for desktop, full for mobile -->
+            <div class="hidden lg:block absolute right-0 top-0 w-1/2 h-full bg-cover bg-center" style="background-image: url('promo-patrocinio-2.png');"></div>
+            <div class="lg:hidden absolute inset-0 w-full h-full bg-cover bg-center opacity-30" style="background-image: url('promo-patrocinio-2.png');"></div>
+            <!-- Overlay gradient -->
+            <div class="absolute inset-0 bg-gradient-to-r from-califa-black via-califa-black/90 to-transparent lg:w-2/3"></div>
+            <div class="absolute inset-0 bg-pattern"></div>
+        </div>
+        
+        <div class="container mx-auto px-6 relative z-10 grid lg:grid-cols-2 gap-12 items-center">
+            <div class="text-left reveal">
+                <div class="inline-block bg-califa-yellow text-black font-bold px-4 py-1 rounded-full mb-6 text-sm uppercase tracking-wider">
+                    Campeonato de España CXM 2027
+                </div>
+                <h1 class="text-5xl md:text-7xl font-black uppercase leading-tight mb-6 text-white drop-shadow-lg">
+                    Patrocina y<br>haz visible<br><span class="text-transparent bg-clip-text bg-gradient-to-r from-califa-yellow to-white">tu marca</span>
+                </h1>
+                <p class="text-xl md:text-2xl text-gray-300 font-semibold mb-10 border-l-4 border-califa-yellow pl-4">
+                    Únete a la historia del deporte por montaña.
+                </p>
+                <div class="flex flex-wrap gap-4">
+                    <a href="#tarifas" class="bg-califa-yellow text-black font-bold uppercase tracking-wider py-4 px-8 rounded hover:bg-white transition duration-300 shadow-[0_0_15px_rgba(255,204,0,0.5)]">
+                        Ver Tarifas
+                    </a>
+                    <a href="#impacto" class="border-2 border-white text-white font-bold uppercase tracking-wider py-4 px-8 rounded hover:bg-white hover:text-black transition duration-300">
+                        Descubrir Más
+                    </a>
+                </div>
+            </div>
+            <!-- Empty column for desktop to show the image clearly -->
+            <div class="hidden lg:flex justify-center items-center reveal reveal-delay-2">
+                <img src="promo-patrocinio-2.png" alt="Califa Mountain Festival Poster" class="rounded-xl shadow-2xl border-4 border-califa-yellow/20 transform rotate-2 hover:rotate-0 transition duration-500 max-h-[80vh] object-contain">
+            </div>
+        </div>
+    </header>
+
+    <!-- VÍDEO PROMOCIONAL -->
+    <section class="py-20 bg-califa-dark" id="video">
+        <div class="container mx-auto px-6">
+            <div class="text-center mb-12 reveal">
+                <h2 class="text-4xl font-black uppercase text-white mb-4">Siente la <span class="text-califa-red">Adrenalina</span></h2>
+                <div class="w-24 h-1 bg-califa-yellow mx-auto"></div>
+            </div>
+            <a href="https://www.youtube.com/watch?v=DVaCiCObBAA" target="_blank">
+            <div class="max-w-4xl mx-auto relative rounded-2xl overflow-hidden shadow-[0_0_40px_rgba(204,0,0,0.3)] group cursor-pointer reveal reveal-delay-1 border border-gray-800">
+                <div class="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition duration-500 z-10 flex items-center justify-center">
+                    <div class="w-20 h-20 bg-califa-red/90 rounded-full flex items-center justify-center transform group-hover:scale-110 transition duration-300 shadow-lg">
+                        <i class="fas fa-play text-3xl text-white ml-2"></i>
+                    </div>
+                </div>
+                <img src="video-bg.PNG" alt="Trail Running Video Thumbnail" class="w-full h-auto object-cover aspect-video transform group-hover:scale-105 transition duration-700">
+            </div></a>
+        </div>
+    </section>
+
+    <!-- PROYECCIÓN E IMPACTO ECONÓMICO -->
+    <section class="py-20 bg-califa-black relative" id="impacto">
+        <div class="container mx-auto px-6">
+            <div class="text-center mb-16 reveal">
+                <h2 class="text-4xl font-black uppercase text-white mb-4">Proyección e <span class="text-califa-yellow">Impacto</span></h2>
+                <div class="w-24 h-1 bg-califa-red mx-auto"></div>
+                <p class="mt-6 text-gray-400 max-w-2xl mx-auto text-lg">Un evento que trasciende lo deportivo para convertirse en un motor económico y turístico de primer nivel.</p>
+            </div>
+            
+            <div class="grid md:grid-cols-3 gap-8 mb-24">
+                <div class="bg-gray-900 p-8 rounded-xl border border-gray-800 text-center reveal hover:border-califa-red transition duration-300">
+                    <div class="w-16 h-16 bg-califa-red/10 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <i class="fas fa-chart-line text-3xl text-califa-red"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold uppercase mb-3">Impacto Económico</h3>
+                    <p class="text-gray-400">Inyección directa en hostelería, comercio y servicios de la región durante el fin de semana del evento.</p>
+                </div>
+                <div class="bg-gray-900 p-8 rounded-xl border border-gray-800 text-center reveal reveal-delay-1 hover:border-califa-yellow transition duration-300">
+                    <div class="w-16 h-16 bg-califa-yellow/10 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <i class="fas fa-map-marked-alt text-3xl text-califa-yellow"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold uppercase mb-3">Turismo Deportivo</h3>
+                    <p class="text-gray-400">Atracción de deportistas y acompañantes a nivel nacional, posicionando el destino en el mapa del trail running.</p>
+                </div>
+                <div class="bg-gray-900 p-8 rounded-xl border border-gray-800 text-center reveal reveal-delay-2 hover:border-white transition duration-300">
+                    <div class="w-16 h-16 bg-white/10 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <i class="fas fa-bullhorn text-3xl text-white"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold uppercase mb-3">Proyección Mediática</h3>
+                    <p class="text-gray-400">Cobertura en medios especializados, prensa regional y retransmisiones, garantizando un alto retorno publicitario.</p>
+                </div>
+            </div>
+
+            <!-- GRÁFICO DE TIEMPO / TIMELINE DE EVOLUCIÓN -->
+            <div class="mt-20">
+                <div class="text-center mb-12 reveal">
+                    <h3 class="text-3xl font-black uppercase text-white mb-2">Histórico y <span class="text-califa-yellow">Crecimiento</span></h3>
+                    <p class="text-gray-400 max-w-2xl mx-auto">La evolución y consolidación de nuestro evento año tras año</p>
+                </div>
+                
+                <div class="relative max-w-7xl mx-auto">
+                    <!-- Línea horizontal (Escritorio) -->
+                    <div class="hidden lg:block absolute top-10 left-0 right-0 h-1 bg-gray-800 z-0"></div>
+                    <!-- Línea vertical (Móvil) -->
+                    <div class="lg:hidden absolute left-4 top-0 bottom-0 w-1 bg-gray-800 z-0"></div>
+                    
+                    <div class="grid grid-cols-1 lg:grid-cols-5 gap-8 lg:gap-4 relative z-10">
+                        
+                        <!-- 2022 -->
+                        <div class="relative pl-12 lg:pl-0 reveal">
+                            <div class="absolute left-4 lg:left-1/2 lg:top-10 w-4 h-4 rounded-full bg-gray-600 border-4 border-califa-black z-10 transform -translate-x-1/2 lg:-translate-y-1/2 mt-1.5 lg:mt-0"></div>
+                            <div class="lg:mt-20 bg-gray-900 p-5 rounded-xl border border-gray-800 hover:border-gray-500 transition h-full flex flex-col">
+                                <div class="flex items-center gap-2 mb-1 justify-start lg:justify-center">
+                                    <i class="fas fa-mountain text-gray-500"></i>
+                                    <span class="text-2xl font-black text-white">2022</span>
+                                </div>
+                                <div class="text-gray-400 text-xs font-bold uppercase mb-2 lg:text-center">Primera Edición</div>
+                                <div class="text-xl font-black text-white mb-3 lg:text-center">290 <span class="text-xs font-normal text-gray-400 block lg:inline">Participantes</span></div>
+                            </div>
+                        </div>
+
+                        <!-- 2023 -->
+                        <div class="relative pl-12 lg:pl-0 reveal reveal-delay-1">
+                            <div class="absolute left-4 lg:left-1/2 lg:top-10 w-4 h-4 rounded-full bg-gray-500 border-4 border-califa-black z-10 transform -translate-x-1/2 lg:-translate-y-1/2 mt-1.5 lg:mt-0"></div>
+                            <div class="lg:mt-20 bg-gray-900 p-5 rounded-xl border border-gray-800 hover:border-gray-400 transition h-full flex flex-col">
+                                <div class="flex items-center gap-2 mb-1 justify-start lg:justify-center">
+                                    <i class="fas fa-mountain text-gray-400"></i>
+                                    <span class="text-2xl font-black text-white">2023</span>
+                                </div>
+                                <div class="text-gray-400 text-xs font-bold uppercase mb-2 lg:text-center">Segunda Edición</div>
+                                <div class="text-xl font-black text-white mb-3 lg:text-center">388 <span class="text-xs font-normal text-gray-400 block lg:inline">Participantes</span></div>
+                                <ul class="text-[11px] text-gray-400 space-y-1 mt-auto border-t border-gray-800 pt-3">
+                                    <li><i class="fas fa-chevron-right text-gray-600 mr-1 text-[8px]"></i> Copa CxM Córdoba</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- 2024 -->
+                        <div class="relative pl-12 lg:pl-0 reveal reveal-delay-2">
+                            <div class="absolute left-4 lg:left-1/2 lg:top-10 w-5 h-5 rounded-full bg-white border-4 border-califa-black z-10 transform -translate-x-1/2 lg:-translate-y-1/2 mt-1 lg:mt-0 shadow-[0_0_10px_rgba(255,255,255,0.3)]"></div>
+                            <div class="lg:mt-20 bg-gray-900 p-5 rounded-xl border border-gray-700 hover:border-white transition h-full flex flex-col">
+                                <div class="flex items-center gap-2 mb-1 justify-start lg:justify-center">
+                                    <i class="fas fa-mountain text-white"></i>
+                                    <span class="text-2xl font-black text-white">2024</span>
+                                </div>
+                                <div class="text-gray-300 text-xs font-bold uppercase mb-2 lg:text-center">Tercera Edición</div>
+                                <div class="text-xl font-black text-white mb-3 lg:text-center">830 <span class="text-xs font-normal text-gray-400 block lg:inline">Participantes</span></div>
+                                <ul class="text-[11px] text-gray-400 space-y-1 mt-auto border-t border-gray-800 pt-3">
+                                    <li><i class="fas fa-chevron-right text-white mr-1 text-[8px]"></i> Cto. Andalucía CxM por Etapas</li>
+                                    <li><i class="fas fa-chevron-right text-white mr-1 text-[8px]"></i> Encuentro Interprovincial Senderismo Andalucía</li>
+                                    <li><i class="fas fa-chevron-right text-white mr-1 text-[8px]"></i> Trofeo UCO CxM Univ. de Córdoba</li>
+                                    <li><i class="fas fa-chevron-right text-white mr-1 text-[8px]"></i> Puntuable 20K UTMB Index</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- 2025 -->
+                        <div class="relative pl-12 lg:pl-0 reveal reveal-delay-2">
+                            <div class="absolute left-4 lg:left-1/2 lg:top-10 w-5 h-5 rounded-full bg-white border-4 border-califa-black z-10 transform -translate-x-1/2 lg:-translate-y-1/2 mt-1 lg:mt-0 shadow-[0_0_10px_rgba(255,255,255,0.3)]"></div>
+                            <div class="lg:mt-20 bg-gray-900 p-5 rounded-xl border border-yellow-900/50 hover:border-white transition h-full flex flex-col">
+                                <div class="flex items-center gap-2 mb-1 justify-start lg:justify-center">
+                                    <i class="fas fa-mountain text-white"></i>
+                                    <span class="text-2xl font-black text-white">2025</span>
+                                </div>
+                                <div class="text-white text-xs font-bold uppercase mb-2 lg:text-center">Cuarta Edición</div>
+                                <div class="text-xl font-black text-white mb-3 lg:text-center">600 <span class="text-xs font-normal text-gray-400 block lg:inline">Participantes</span></div>
+                                <ul class="text-[11px] text-gray-400 space-y-1 mt-auto border-t border-gray-800 pt-3">
+                                    <li><i class="fas fa-chevron-right text-califa-yellow mr-1 text-[8px]"></i> Copa CADEBA Interprovincial CxM</li>
+                                    <li><i class="fas fa-chevron-right text-califa-yellow mr-1 text-[8px]"></i> Copa CxM Córdoba</li>
+                                    <li><i class="fas fa-chevron-right text-califa-yellow mr-1 text-[8px]"></i> Trofeo UCO CxM Univ. de Córdoba</li>
+                                    <li><i class="fas fa-chevron-right text-califa-yellow mr-1 text-[8px]"></i> Puntuable 20K UTMB Index</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- 2026 -->
+                        <div class="relative pl-12 lg:pl-0 reveal reveal-delay-4">
+                            <div class="absolute left-4 lg:left-1/2 lg:top-10 w-6 h-6 rounded-full bg-califa-yellow border-4 border-califa-black z-10 transform -translate-x-1/2 lg:-translate-y-1/2 mt-0.5 lg:mt-0 shadow-[0_0_15px_rgba(204,0,0,0.8)]"></div>
+                            <div class="lg:mt-20 bg-gradient-to-b from-gray-900 to-califa-dark p-5 rounded-xl border-2 border-califa-yellow hover:shadow-[0_0_20px_rgba(204,0,0,0.3)] transition h-full flex flex-col relative overflow-hidden">
+                                <div class="flex items-center gap-2 mb-1 justify-start lg:justify-center">
+                                    <i class="fas fa-mountain text-califa-yellow"></i>
+                                    <span class="text-2xl font-black text-white">2026</span>
+                                </div>
+                                <div class="text-califa-yellow text-xs font-bold uppercase mb-2 lg:text-center">Quinta Edición</div>
+                                <div class="text-2xl font-black text-califa-yellow mb-3 lg:text-center">800 <span class="text-xs font-normal text-gray-400 block lg:inline">Participantes</span></div>
+                                <ul class="text-[11px] text-gray-300 space-y-1 mt-auto border-t border-gray-700 pt-3">
+                                    <li><i class="fas fa-chevron-right text-califa-yellow mr-1 text-[8px]"></i> Cto. Andalucía CxM por Etapas</li>
+                                    <li><i class="fas fa-chevron-right text-califa-yellow mr-1 text-[8px]"></i> Cto. Andalucía Mini CxM Selec. Provinciales</li>
+                                    <li><i class="fas fa-chevron-right text-califa-yellow mr-1 text-[8px]"></i> Encuentro Occid. Interprovincial CxM Edad Escolar</li>
+                                    <li><i class="fas fa-chevron-right text-califa-yellow mr-1 text-[8px]"></i> Copa CxM Córdoba</li>
+                                    <li><i class="fas fa-chevron-right text-califa-yellow mr-1 text-[8px]"></i> Trofeo UCO CxM Univ. de Córdoba</li>
+                                    <li><i class="fas fa-chevron-right text-califa-yellow mr-1 text-[8px]"></i> Puntuable 20K UTMB Index</li>
+                                    <li><i class="fas fa-chevron-right text-califa-yellow mr-1 text-[8px]"></i> Circuito Provincial Senderismo</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- 2027 -->
+                        <div class="relative pl-12 lg:pl-0 reveal reveal-delay-5">
+                            <div class="absolute left-4 lg:left-1/2 lg:top-10 w-6 h-6 rounded-full bg-califa-red border-4 border-califa-black z-10 transform -translate-x-1/2 lg:-translate-y-1/2 mt-0.5 lg:mt-0 shadow-[0_0_15px_rgba(204,0,0,0.8)]"></div>
+                            <div class="lg:mt-20 bg-gradient-to-b from-gray-900 to-califa-dark p-5 rounded-xl border-2 border-califa-red hover:shadow-[0_0_20px_rgba(204,0,0,0.3)] transition h-full flex flex-col relative overflow-hidden">
+                                <div class="absolute top-0 right-0 bg-califa-red text-white text-[10px] font-bold px-2 py-1 rounded-bl-lg uppercase">Próxima Edición</div>
+                                <div class="flex items-center gap-2 mb-1 justify-start lg:justify-center">
+                                    <i class="fas fa-mountain text-califa-red"></i>
+                                    <span class="text-2xl font-black text-white">2027</span>
+                                </div>
+                                <div class="text-califa-red text-xs font-bold uppercase mb-2 lg:text-center">Sexta Edición</div>
+                                <div class="text-2xl font-black text-califa-red mb-3 lg:text-center">1500 <span class="text-xs font-normal text-gray-400 block lg:inline">Participantes</span></div>
+                                <span class="text-xl font-black text-califa-red "> Cto. España CxM por Etapas </span>
+                                <span class="text-l font-black text-white "> Cto. Andalucía Mini CxM Seleciones. Provinciales </span>
+
+                                <ul class="text-[11px] text-gray-300 space-y-1 mt-auto border-t border-gray-700 pt-3">
+                                    <li><i class="fas fa-chevron-right text-califa-red mr-1 text-[8px]"></i> Cto. España CxM por Etapas</li>
+                                    <li><i class="fas fa-chevron-right text-califa-red mr-1 text-[8px]"></i> Cto. Andalucía Mini CxM Selec. Provinciales</li>
+                                    <li><i class="fas fa-chevron-right text-califa-red mr-1 text-[8px]"></i> Encuentro Occid. Interprovincial CxM Edad Escolar</li>
+                                    <li><i class="fas fa-chevron-right text-califa-red mr-1 text-[8px]"></i> Copa CxM Córdoba</li>
+                                    <li><i class="fas fa-chevron-right text-califa-red mr-1 text-[8px]"></i> Trofeo UCO CxM Univ. de Córdoba</li>
+                                    <li><i class="fas fa-chevron-right text-califa-red mr-1 text-[8px]"></i> Puntuable 20K UTMB Index</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            <!-- FIN TIMELINE -->
+
+        </div>
+    </section>
+
+    <!-- COMUNIDAD -->
+    <section class="py-24 bg-califa-red text-white section-clip relative" id="comunidad">
+        <div class="absolute inset-0 bg-pattern opacity-20"></div>
+        <div class="container mx-auto px-6 relative z-10">
+            <div class="text-center mb-16 reveal">
+                <h2 class="text-4xl font-black uppercase mb-4">Nuestra <span class="text-califa-yellow">Comunidad</span></h2>
+                <div class="w-24 h-1 bg-white mx-auto"></div>
+            </div>
+            
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+                <div class="p-6 reveal">
+                    <i class="fas fa-users text-4xl mb-4 text-califa-yellow"></i>
+                    <div class="text-5xl font-black mb-2 counter" data-target="800">0</div>
+                    <div class="text-sm font-semibold uppercase tracking-wide text-white/80">Participantes (Ediciones 2026)</div>
+                </div>
+                <div class="p-6 reveal reveal-delay-1">
+                    <i class="fab fa-instagram text-4xl mb-4 text-califa-yellow"></i>
+                    <div class="text-5xl font-black mb-2"><span class="counter" data-target="3.5">0</span>K+</div>
+                    <div class="text-sm font-semibold uppercase tracking-wide text-white/80">Seguidores Instagram</div>
+                </div>
+                <div class="p-6 reveal reveal-delay-2">
+                    <i class="fab fa-facebook-f text-4xl mb-4 text-califa-yellow"></i>
+                    <div class="text-5xl font-black mb-2"><span class="counter" data-target="1.9">0</span>K+</div>
+                    <div class="text-sm font-semibold uppercase tracking-wide text-white/80">Seguidores Facebook</div>
+                </div>
+                <div class="p-6 reveal reveal-delay-3">
+                    <i class="fas fa-globe text-4xl mb-4 text-califa-yellow"></i>
+                    <div class="text-5xl font-black mb-2"><span class="counter" data-target="20">0</span>K+</div>
+                    <div class="text-sm font-semibold uppercase tracking-wide text-white/80">Impactos Web Anuales</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FORMATO DEL EVENTO & SINERGIAS -->
+    <section class="py-20 bg-califa-dark" id="formato">
+        <div class="container mx-auto px-6">
+            <div class="grid lg:grid-cols-2 gap-16">
+                <!-- Formato -->
+                <div>
+                    <div class="mb-10 reveal">
+                        <h2 class="text-3xl font-black uppercase text-white mb-2">Formato del <span class="text-califa-red">Evento</span></h2>
+                        <div class="w-16 h-1 bg-califa-yellow"></div>
+                    </div>
+                    <div class="space-y-6">
+                        <div class="bg-gray-900 border-l-4 border-califa-red p-6 rounded-r-xl reveal">
+                            <h4 class="text-xl font-bold uppercase text-white mb-2">3 Días de Competición</h4>
+                            <p class="text-gray-400">1, 2 y 3 de Octubre 2027. Un fin de semana completo dedicado al deporte, la convivencia y la montaña.</p>
+                        </div>
+                        <div class="bg-gray-900 border-l-4 border-califa-yellow p-6 rounded-r-xl reveal reveal-delay-1">
+                            <h4 class="text-xl font-bold uppercase text-white mb-2">Modalidades</h4>
+                            <p class="text-gray-400">Campeonato de España CXM por Etapas y Campeonato de Andalucía CXM Mini por Selecciones. Adaptado a diferentes niveles de exigencia.</p>
+                        </div>
+                        <div class="bg-gray-900 border-l-4 border-white p-6 rounded-r-xl reveal reveal-delay-2">
+                            <h4 class="text-xl font-bold uppercase text-white mb-2">Actividades Paralelas</h4>
+                            <p class="text-gray-400">Charlas técnicas, conciertos, zona gastronómica y actividades infantiles para crear un ambiente festivo integral.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Sinergias -->
+                <div>
+                    <div class="mb-10 reveal">
+                        <h2 class="text-3xl font-black uppercase text-white mb-2">Sinergias <span class="text-califa-yellow">Estratégicas</span></h2>
+                        <div class="w-16 h-1 bg-califa-red"></div>
+                    </div>
+                    <div class="grid gap-4">
+                        <div class="group relative overflow-hidden rounded-xl bg-gray-800 h-32 reveal flex items-center">
+                            <div class="absolute inset-0 bg-califa-red/20 group-hover:bg-califa-red/40 transition duration-300"></div>
+                            <div class="relative z-10 px-8 flex items-center gap-6">
+                                <i class="fas fa-running text-4xl text-califa-yellow"></i>
+                                <div>
+                                    <h4 class="text-xl font-bold uppercase text-white">Deporte</h4>
+                                    <p class="text-sm text-gray-300">Salud, superación y valores.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="group relative overflow-hidden rounded-xl bg-gray-800 h-32 reveal reveal-delay-1 flex items-center">
+                            <div class="absolute inset-0 bg-califa-yellow/10 group-hover:bg-califa-yellow/30 transition duration-300"></div>
+                            <div class="relative z-10 px-8 flex items-center gap-6">
+                                <i class="fas fa-handshake text-4xl text-white"></i>
+                                <div>
+                                    <h4 class="text-xl font-bold uppercase text-white">Networking</h4>
+                                    <p class="text-sm text-gray-300">Conexiones B2B entre patrocinadores y entidades.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="group relative overflow-hidden rounded-xl bg-gray-800 h-32 reveal reveal-delay-2 flex items-center">
+                            <div class="absolute inset-0 bg-white/10 group-hover:bg-white/20 transition duration-300"></div>
+                            <div class="relative z-10 px-8 flex items-center gap-6">
+                                <i class="fas fa-store text-4xl text-califa-red"></i>
+                                <div>
+                                    <h4 class="text-xl font-bold uppercase text-white">Feria del Corredor</h4>
+                                    <p class="text-sm text-gray-300">Exposición directa de productos al público objetivo.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- DESARROLLO / PLANNING -->
+    <section class="py-20 bg-califa-black" id="planning">
+        <div class="container mx-auto px-6">
+            <div class="text-center mb-16 reveal">
+                <h2 class="text-4xl font-black uppercase text-white mb-4">Planning del <span class="text-califa-red">Evento</span></h2>
+                <div class="w-24 h-1 bg-califa-yellow mx-auto"></div>
+            </div>
+            
+            <div class="max-w-3xl mx-auto relative">
+                <!-- Línea central -->
+                <div class="absolute left-4 md:left-1/2 top-0 bottom-0 w-1 bg-gray-800 transform md:-translate-x-1/2"></div>
+                
+                <!-- Día 1 -->
+                <div class="relative flex items-center justify-between md:justify-normal w-full mb-12 reveal">
+                    <div class="w-10 md:w-1/2 md:pr-12 md:text-right"></div>
+                    <div class="absolute left-4 md:left-1/2 w-4 h-4 rounded-full bg-califa-yellow transform -translate-x-1/2 md:-translate-x-1/2 border-4 border-califa-black z-10"></div>
+                    <div class="ml-12 md:ml-0 md:w-1/2 md:pl-12">
+                        <div class="bg-gray-900 p-6 rounded-xl border border-gray-800 hover:border-califa-yellow transition">
+                            <div class="text-califa-yellow font-bold mb-1">Día 1 - 1 Octubre</div>
+                            <h4 class="text-xl font-bold uppercase text-white mb-2">Etapa Nocturna 14K 750+/750-</h4>
+                            <p class="text-gray-400 text-sm">Apertura de la Feria del Corredor, recogida de dorsales, briefing técnico y etapa prólogo inaugural.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Día 2 -->
+                <div class="relative flex items-center justify-between md:justify-normal w-full mb-12 flex-row-reverse reveal reveal-delay-1">
+                    <div class="w-10 md:w-1/2 md:pl-12 text-left"></div>
+                    <div class="absolute left-4 md:left-1/2 w-4 h-4 rounded-full bg-califa-red transform -translate-x-1/2 md:-translate-x-1/2 border-4 border-califa-black z-10"></div>
+                    <div class="ml-12 md:ml-0 md:w-1/2 md:pr-12 text-left md:text-right w-full">
+                        <div class="bg-gray-900 p-6 rounded-xl border border-gray-800 hover:border-califa-red transition">
+                            <div class="text-califa-red font-bold mb-1">Día 2 - 2 Octubre</div>
+                            <h4 class="text-xl font-bold uppercase text-white mb-2">Etapa 2: 25K 1000+/1000- y Cxm Mini 13K 600+/600-</h4>
+                            <p class="text-gray-400 text-sm">Salida de la etapa 2 de la CxM por Etapas, inicio de la modalidad CxM Mini y Campeonato de Andalucía CXM Mini.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Día 3 -->
+                <div class="relative flex items-center justify-between md:justify-normal w-full reveal reveal-delay-2">
+                    <div class="w-10 md:w-1/2 md:pr-12 md:text-right"></div>
+                    <div class="absolute left-4 md:left-1/2 w-4 h-4 rounded-full bg-white transform -translate-x-1/2 md:-translate-x-1/2 border-4 border-califa-black z-10"></div>
+                    <div class="ml-12 md:ml-0 md:w-1/2 md:pl-12">
+                        <div class="bg-gray-900 p-6 rounded-xl border border-gray-800 hover:border-white transition">
+                            <div class="text-white font-bold mb-1">Día 3 - 3 Octubre</div>
+                            <h4 class="text-xl font-bold uppercase text-white mb-2">Etapa 3 Contrarreloj: 12K 750+/750-, Senderismo 10K 350+/350-, Prueba de obstáculos infantiles y Clausura</h4>
+                            <p class="text-gray-400 text-sm">Última etapa decisiva, ceremonia de entrega de premios y clausura del evento.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- NUEVA SECCIÓN: SOPORTES PARA TU MARCA Y GALERÍA -->
+    <section class="py-24 bg-califa-red relative section-clip text-white" id="soportes">
+        <div class="absolute inset-0 bg-pattern opacity-10"></div>
+        <div class="container mx-auto px-6 relative z-10">
+            <div class="text-center mb-16 reveal">
+                <h2 class="text-4xl font-black uppercase mb-4">Soportes para tu <span class="text-califa-yellow">Marca</span></h2>
+                <div class="w-24 h-1 bg-white mx-auto"></div>
+                <p class="mt-6 text-white/90 max-w-2xl mx-auto text-lg">Visualiza dónde estará presente tu logotipo. Contamos con espacios de alto impacto físico y digital en los momentos clave del evento.</p>
+            </div>
+            
+            <!-- Galería -->
+            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                
+                <!-- Ítem Galería 1: Prendas -->
+                <div class="group relative overflow-hidden rounded-xl bg-califa-dark aspect-square reveal">
+                    <div class="absolute inset-0 flex items-center justify-center text-gray-500">
+                        <i class="fas fa-tshirt text-5xl opacity-30"></i>
+                    </div>
+                    <!-- Cambia "foto-camiseta.jpg" por la ruta real de tu imagen -->
+                    <img src="merchandasing.png" onerror="this.style.opacity='0'" alt="Camiseta y Sudadera" class="absolute inset-0 w-full h-full object-cover transform group-hover:scale-110 transition duration-500 z-10">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent flex flex-col justify-end p-5 z-20">
+                        <h4 class="text-white font-bold uppercase text-sm md:text-base">Prendas Oficiales</h4>
+                        <p class="text-califa-yellow text-xs">Camisetas, sudaderas</p>
+                    </div>
+                </div>
+
+                <!-- Ítem Galería 2: Medallas -->
+                <div class="group relative overflow-hidden rounded-xl bg-califa-dark aspect-square reveal reveal-delay-1">
+                    <div class="absolute inset-0 flex items-center justify-center text-gray-500">
+                        <i class="fas fa-medal text-5xl opacity-30"></i>
+                    </div>
+                    <img src="trofeos.png" onerror="this.style.opacity='0'" alt="Medallas" class="absolute inset-0 w-full h-full object-cover transform group-hover:scale-110 transition duration-500 z-10">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent flex flex-col justify-end p-5 z-20">
+                        <h4 class="text-white font-bold uppercase text-sm md:text-base">Trofeos</h4>
+                        <p class="text-califa-yellow text-xs">Premios y trofeos</p>
+                    </div>
+                </div>
+
+                <!-- Ítem Galería 3: Arco de Meta -->
+                <div class="group relative overflow-hidden rounded-xl bg-califa-dark aspect-square reveal reveal-delay-2">
+                    <div class="absolute inset-0 flex items-center justify-center text-gray-500">
+                        <i class="fas fa-flag-checkered text-5xl opacity-30"></i>
+                    </div>
+                    <img src="arco.png" onerror="this.style.opacity='0'" alt="Arco de Meta" class="absolute inset-0 w-full h-full object-cover transform group-hover:scale-110 transition duration-500 z-10">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent flex flex-col justify-end p-5 z-20">
+                        <h4 class="text-white font-bold uppercase text-sm md:text-base">Arco de Meta</h4>
+                        <p class="text-califa-yellow text-xs">Soporte físico y digital</p>
+                    </div>
+                </div>
+
+                <!-- Ítem Galería 4: Dorsales -->
+                <div class="group relative overflow-hidden rounded-xl bg-califa-dark aspect-square reveal reveal-delay-3">
+                    <div class="absolute inset-0 flex items-center justify-center text-gray-500">
+                        <i class="fas fa-id-card text-5xl opacity-30"></i>
+                    </div>
+                    <img src="dorsal.png" onerror="this.style.opacity='0'" alt="Dorsales" class="absolute inset-0 w-full h-full object-cover transform group-hover:scale-110 transition duration-500 z-10">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent flex flex-col justify-end p-5 z-20">
+                        <h4 class="text-white font-bold uppercase text-sm md:text-base">Dorsales</h4>
+                        <p class="text-califa-yellow text-xs">Visibilidad total</p>
+                    </div>
+                </div>
+                
+                <!-- Ítem Galería 5: Photocall -->
+                <div class="group relative overflow-hidden rounded-xl bg-califa-dark aspect-square reveal">
+                    <div class="absolute inset-0 flex items-center justify-center text-gray-500">
+                        <i class="fas fa-camera text-5xl opacity-30"></i>
+                    </div>
+                    <img src="photocall.png" onerror="this.style.opacity='0'" alt="Photocall" class="absolute inset-0 w-full h-full object-cover transform group-hover:scale-110 transition duration-500 z-10">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent flex flex-col justify-end p-5 z-20">
+                        <h4 class="text-white font-bold uppercase text-sm md:text-base">Photocall y Podio</h4>
+                        <p class="text-califa-yellow text-xs">Zona de prensa y premios</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- TARIFAS DE PATROCINIO -->
+    <section class="py-24 bg-califa-dark bg-pattern bg-blend-overlay" id="tarifas">
+        <div class="container mx-auto px-4 lg:px-6">
+            <div class="text-center mb-16 reveal">
+                <h2 class="text-4xl md:text-5xl font-black uppercase text-white mb-4">Elige tu <span class="text-califa-red">Plan</span></h2>
+                <div class="w-24 h-1 bg-califa-yellow mx-auto"></div>
+                <p class="mt-6 text-gray-400 max-w-2xl mx-auto text-lg">Asocia tu marca a los valores del esfuerzo, la naturaleza y la élite del deporte. Diferentes opciones para maximizar tu impacto.</p>
+            </div>
+
+            <!-- Tabla de Precios Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6 max-w-7xl mx-auto">
+                
+                <!-- EXCLUSIVE (DESTACADO) -->
+                <div class="bg-gradient-to-b from-gray-900 to-califa-black rounded-2xl border-2 border-califa-yellow shadow-[0_0_30px_rgba(255,204,0,0.2)] flex flex-col pricing-card transition duration-300 reveal relative overflow-hidden transform lg:scale-105 z-10 lg:-translate-y-4">
+                    <div class="absolute top-0 inset-x-0 bg-califa-yellow text-black text-center text-xs font-bold py-1 uppercase tracking-widest">
+                        Max 1 Patrocinador
+                    </div>
+                    <div class="p-6 border-b border-gray-800 text-center mt-4">
+                        <h3 class="text-2xl font-black uppercase text-califa-yellow mb-2">Exclusive</h3>
+                        <div class="text-4xl font-black text-white">3.500€ <span class="text-sm font-normal text-gray-500">+IVA</span></div>
+                    </div>
+                    <div class="p-6 flex-grow bg-gray-900/50">
+                        <ul class="space-y-4 text-sm text-gray-300">
+                            <li class="flex items-start font-bold text-white"><i class="fas fa-star text-califa-yellow mt-1 mr-3"></i> Naming: "Prueba X Califa Mountain Festival"</li>
+                            <li class="flex items-start"><i class="fas fa-check text-califa-yellow mt-1 mr-3"></i> 1 Representante en actos oficiales</li>
+                            <li class="flex items-start"><i class="fas fa-check text-califa-yellow mt-1 mr-3"></i> Logo DESTACADO en TODOS los soportes / Prendas</li>
+                            <li class="flex items-start"><i class="fas fa-check text-califa-yellow mt-1 mr-3"></i> Logo DESTACADO en ARCO DE META DIGITAL</li>
+                            <li class="flex items-start"><i class="fas fa-check text-califa-yellow mt-1 mr-3"></i> Mención en TODAS las publicaciones Redes Sociales</li>
+                            <li class="flex items-start"><i class="fas fa-check text-califa-yellow mt-1 mr-3"></i> STAND en feria</li>
+                            <li class="flex items-start"><i class="fas fa-check text-califa-yellow mt-1 mr-3"></i> LONA | BANDERA en zona de meta</li>
+                            <li class="flex items-start"><i class="fas fa-check text-califa-yellow mt-1 mr-3"></i> Logo en EMAIL confirmación inscripciones</li>
+                        </ul>
+                    </div>
+                    <div class="p-6 mt-auto bg-gray-900/50">
+                        <a href="mailto:rsrunningseruies@gmail.com" class="block w-full text-center bg-califa-yellow hover:bg-white text-black font-black uppercase py-4 rounded transition shadow-[0_0_15px_rgba(255,204,0,0.5)]">Ser Exclusivo</a>
+                    </div>
+                </div>
+
+                <!-- PREMIUM -->
+                <div class="bg-gray-900 rounded-2xl border border-califa-red/50 flex flex-col pricing-card transition duration-300 reveal reveal-delay-1 relative overflow-hidden">
+                     <div class="absolute top-0 inset-x-0 bg-califa-red text-white text-center text-xs font-bold py-1 uppercase tracking-widest">
+                        Max 2 Patrocinadores
+                    </div>
+                    <div class="p-6 border-b border-gray-800 text-center mt-4">
+                        <h3 class="text-xl font-bold uppercase text-califa-red mb-2">Premium</h3>
+                        <div class="text-3xl font-black text-white">2.000€ <span class="text-sm font-normal text-gray-500">+IVA</span></div>
+                    </div>
+                    <div class="p-6 flex-grow">
+                        <ul class="space-y-4 text-sm text-gray-400">
+                            <li class="flex items-start"><i class="fas fa-check text-califa-red mt-1 mr-3"></i> 1 Representante en actos oficiales</li>
+                            <li class="flex items-start"><i class="fas fa-check text-califa-red mt-1 mr-3"></i> Logo GRANDE en TODOS los soportes / Prendas</li>
+                            <li class="flex items-start"><i class="fas fa-check text-califa-red mt-1 mr-3"></i> Logo en ARCO DE META DIGITAL</li>
+                            <li class="flex items-start"><i class="fas fa-check text-califa-red mt-1 mr-3"></i> Mención en TODAS las publicaciones Redes Sociales</li>
+                            <li class="flex items-start"><i class="fas fa-check text-califa-red mt-1 mr-3"></i> STAND en feria</li>
+                            <li class="flex items-start"><i class="fas fa-check text-califa-red mt-1 mr-3"></i> LONA | BANDERA en zona de meta</li>
+                            <li class="flex items-start"><i class="fas fa-check text-califa-red mt-1 mr-3"></i> Logo en EMAIL confirmación inscripciones</li>
+                        </ul>
+                    </div>
+                    <div class="p-6 mt-auto">
+                        <a href="mailto:rsrunningseruies@gmail.com" class="block w-full text-center bg-califa-red/20 hover:bg-califa-red text-white border border-califa-red font-bold py-3 rounded transition">Seleccionar</a>
+                    </div>
+                </div>
+
+                <!-- GOLD -->
+                <div class="bg-gray-900 rounded-2xl border border-gray-600 flex flex-col pricing-card transition duration-300 reveal reveal-delay-2 relative overflow-hidden">
+                    <div class="p-6 border-b border-gray-800 text-center">
+                        <h3 class="text-xl font-bold uppercase text-yellow-600 mb-2">Gold</h3>
+                        <div class="text-3xl font-black text-white">1.200€ <span class="text-sm font-normal text-gray-500">+IVA</span></div>
+                    </div>
+                    <div class="p-6 flex-grow">
+                        <ul class="space-y-4 text-sm text-gray-400">
+                            <li class="flex items-start"><i class="fas fa-check text-califa-red mt-1 mr-3"></i> 1 Representante en actos oficiales</li>
+                            <li class="flex items-start"><i class="fas fa-check text-califa-red mt-1 mr-3"></i> Logo MEDIANO en TODOS los soportes / Prendas</li>
+                            <li class="flex items-start"><i class="fas fa-check text-califa-red mt-1 mr-3"></i> Logo en ARCO DE META DIGITAL</li>
+                            <li class="flex items-start"><i class="fas fa-check text-califa-red mt-1 mr-3"></i> Presencia en Redes Sociales</li>
+                            <li class="flex items-start"><i class="fas fa-check text-califa-red mt-1 mr-3"></i> STAND en feria</li>
+                            <li class="flex items-start"><i class="fas fa-check text-califa-red mt-1 mr-3"></i> LONA | BANDERA en zona de meta</li>
+                            <li class="flex items-start"><i class="fas fa-check text-califa-red mt-1 mr-3"></i> Logo en EMAIL confirmación</li>
+                        </ul>
+                    </div>
+                    <div class="p-6 mt-auto">
+                        <a href="mailto:rsrunningseruies@gmail.com" class="block w-full text-center border border-yellow-600 text-yellow-600 hover:bg-yellow-600 hover:text-white font-bold py-3 rounded transition">Seleccionar</a>
+                    </div>
+                </div>
+
+                <!-- SILVER -->
+                <div class="bg-gray-900 rounded-2xl border border-gray-700 flex flex-col pricing-card transition duration-300 reveal reveal-delay-2 relative overflow-hidden">
+                    <div class="p-6 border-b border-gray-800 text-center">
+                        <h3 class="text-xl font-bold uppercase text-gray-300 mb-2">Silver</h3>
+                        <div class="text-3xl font-black text-white">600€ <span class="text-sm font-normal text-gray-500">+IVA</span></div>
+                    </div>
+                    <div class="p-6 flex-grow">
+                        <ul class="space-y-4 text-sm text-gray-400">
+                            <li class="flex items-start"><i class="fas fa-check text-califa-red mt-1 mr-3"></i> Logo MEDIANO en cartelería</li>
+                            <li class="flex items-start"><i class="fas fa-check text-califa-red mt-1 mr-3"></i> Logo en ARCO DE META DIGITAL</li>
+                            <li class="flex items-start"><i class="fas fa-check text-califa-red mt-1 mr-3"></i> Publicación específica en redes sociales</li>
+                            <li class="flex items-start"><i class="fas fa-check text-califa-red mt-1 mr-3"></i> STAND en feria</li>
+                        </ul>
+                    </div>
+                    <div class="p-6 mt-auto">
+                        <a href="mailto:rsrunningseruies@gmail.com" class="block w-full text-center border border-gray-400 hover:bg-gray-700 text-white font-bold py-3 rounded transition">Seleccionar</a>
+                    </div>
+                </div>
+                
+                <!-- COLABORADOR -->
+                <div class="bg-gray-900 rounded-2xl border border-gray-800 flex flex-col pricing-card transition duration-300 reveal reveal-delay-1 relative overflow-hidden">
+                    <div class="p-6 border-b border-gray-800 text-center">
+                        <h3 class="text-lg font-bold uppercase text-gray-300 mb-2">Colaborador</h3>
+                        <div class="text-3xl font-black text-white">350€ <span class="text-sm font-normal text-gray-500">+IVA</span></div>
+                    </div>
+                    <div class="p-6 flex-grow">
+                        <ul class="space-y-4 text-sm text-gray-400">
+                            <li class="flex items-start"><i class="fas fa-check text-califa-red mt-1 mr-3"></i> Logo PEQUEÑO en cartelería</li>
+                            <li class="flex items-start"><i class="fas fa-check text-califa-red mt-1 mr-3"></i> Publicación específica en redes sociales</li>
+                        </ul>
+                    </div>
+                    <div class="p-6 mt-auto">
+                        <a href="mailto:rsrunningseruies@gmail.com" class="block w-full text-center border border-gray-600 hover:bg-gray-800 text-white font-bold py-3 rounded transition">Seleccionar</a>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER CTA -->
+    <footer class="bg-califa-red border-t-8 border-califa-yellow py-12 relative overflow-hidden text-center">
+        <div class="absolute inset-0 bg-pattern opacity-10"></div>
+        <div class="container mx-auto px-6 relative z-10">
+            <h2 class="text-3xl md:text-5xl font-black uppercase text-white mb-6 drop-shadow-md">
+                ¿Listo para hacer historia con nosotros?
+            </h2>
+            <p class="text-xl text-white/90 mb-8 font-semibold">Contacta ahora y asegura el espacio para tu marca.</p>
+            <a href="https://califamountainfestival.com/patrocinio" target="_blank" class="inline-flex items-center gap-3 bg-white text-califa-red font-black text-lg md:text-xl uppercase py-4 px-10 rounded-full hover:bg-califa-yellow hover:text-black transition duration-300 shadow-xl hover:scale-105 transform">
+                <span>califamountainfestival.com/patrocinio</span>
+                <i class="fas fa-arrow-right"></i>
+            </a>
+            <div class="mt-12 text-sm font-medium text-white/60">
+                &copy; 2027 Califa Mountain Festival. Todos los derechos reservados.
+            </div>
+        </div>
+    </footer>
+
+    <!-- JS for Scroll Animations & Counters -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Scroll Animation Observer (Fade Up)
+            const revealElements = document.querySelectorAll('.reveal');
+            
+            const revealOptions = {
+                threshold: 0.15,
+                rootMargin: "0px 0px -50px 0px"
+            };
+            
+            const revealObserver = new IntersectionObserver(function(entries, observer) {
+                entries.forEach(entry => {
+                    if (!entry.isIntersecting) return;
+                    entry.target.classList.add('active');
+                    
+                    // Si el elemento contiene contadores, actívalos
+                    const counters = entry.target.querySelectorAll('.counter');
+                    if (counters.length > 0) {
+                        counters.forEach(counter => {
+                            const updateCount = () => {
+                                const target = +counter.getAttribute('data-target');
+                                const count = +counter.innerText;
+                                const speed = 200; // Lower is faster
+                                const inc = target / speed;
+
+                                if (count < target) {
+                                    counter.innerText = Math.ceil(count + inc);
+                                    setTimeout(updateCount, 15);
+                                } else {
+                                    counter.innerText = target;
+                                }
+                            };
+                            // Prevenir que se ejecute múltiples veces si se scrollea arriba/abajo
+                            if (counter.innerText === "0") {
+                                updateCount();
+                            }
+                        });
+                    }
+                    observer.unobserve(entry.target);
+                });
+            }, revealOptions);
+
+            revealElements.forEach(el => {
+                revealObserver.observe(el);
+            });
+        });
+    </script>
+</body>
+</html>

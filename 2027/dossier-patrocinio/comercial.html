@@ -102,7 +102,7 @@
                         Gestor de Tarifas & <span class="text-califa-yellow">Generador PDF</span>
                     </h1>
                     <p class="text-xs text-slate-400 mt-1">
-                        Base por defecto: <code class="text-amber-300 bg-slate-800 px-2 py-0.5 rounded">presupuestos / califamountainfestival27 / base / tarifas</code>
+                        Ruta principal: <code class="text-amber-300 bg-slate-800 px-2 py-0.5 rounded">presupuestos / califamountainfestival27 / [alias] / tarifas</code>
                     </p>
                 </div>
 
@@ -120,27 +120,39 @@
                 </div>
             </div>
 
-            <!-- BLOQUE DE GUARDADO EN FIRESTORE CON ALIAS (AL NIVEL DE "base") -->
+            <!-- BLOQUE DE GESTIÓN DE ALIAS Y SELECT DROPDOWN -->
             <div class="bg-slate-800/80 border border-emerald-500/40 rounded-xl p-4 my-5">
-                <div class="flex flex-col lg:flex-row lg:items-end gap-3">
-                    <div class="flex-grow">
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 items-end">
+                    
+                    <!-- Select Dropdown para leer los presupuestos existentes -->
+                    <div class="lg:col-span-4">
+                        <label for="select-alias" class="block text-xs font-black uppercase text-emerald-400 mb-1">
+                            <i class="fas fa-list mr-1"></i> Presupuestos en "califamountainfestival27"
+                        </label>
+                        <select id="select-alias" class="w-full bg-slate-950 border border-slate-700 focus:border-emerald-400 rounded-lg px-3 py-2.5 text-sm text-white focus:outline-none">
+                            <option value="">-- Seleccionar presupuesto --</option>
+                            <option value="base">base (Plantilla Principal)</option>
+                        </select>
+                    </div>
+
+                    <!-- Input para nuevo alias -->
+                    <div class="lg:col-span-5">
                         <label for="input-alias" class="block text-xs font-black uppercase text-emerald-400 mb-1">
-                            <i class="fas fa-bookmark mr-1"></i> Alias del Presupuesto (Se guarda al nivel de <code class="text-amber-300">base</code>)
+                            <i class="fas fa-bookmark mr-1"></i> Nombre del Nuevo Alias
                         </label>
                         <div class="flex items-center bg-slate-950 border border-slate-700 focus-within:border-emerald-400 rounded-lg overflow-hidden">
-                            <span class="text-[11px] text-slate-500 pl-3 pr-1 select-none hidden sm:inline">presupuestos/califamountainfestival27/</span>
                             <input type="text" id="input-alias" placeholder="ej: patrocinio-empresa-x" 
-                                   class="w-full bg-transparent px-2 py-2.5 text-sm font-bold text-white placeholder-slate-500 focus:outline-none">
-                            <span class="text-[11px] text-slate-500 pr-3 pl-1 select-none">/tarifas</span>
+                                   class="w-full bg-transparent px-3 py-2.5 text-sm font-bold text-white placeholder-slate-500 focus:outline-none">
                         </div>
                     </div>
 
-                    <div class="flex flex-wrap gap-2">
-                        <button id="btn-save-alias" type="button" class="bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs uppercase tracking-wider px-5 py-3 rounded-lg shadow-md transition flex items-center gap-2">
-                            <i class="fas fa-save"></i> Guardar Presupuesto
+                    <!-- Botones de Guardar / Cargar -->
+                    <div class="lg:col-span-3 flex items-center gap-2">
+                        <button id="btn-save-alias" type="button" class="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs uppercase tracking-wider px-3 py-3 rounded-lg shadow-md transition flex items-center justify-center gap-1.5" title="Guardar presupuesto">
+                            <i class="fas fa-save"></i> Guardar
                         </button>
-                        <button id="btn-load-alias" type="button" class="bg-slate-700 hover:bg-slate-600 text-white font-bold text-xs uppercase tracking-wider px-4 py-3 rounded-lg transition flex items-center gap-2" title="Cargar un presupuesto ya guardado con este alias">
-                            <i class="fas fa-folder-open"></i> Cargar Alias
+                        <button id="btn-load-alias" type="button" class="bg-slate-700 hover:bg-slate-600 text-white font-bold text-xs uppercase tracking-wider px-3 py-3 rounded-lg transition flex items-center justify-center gap-1.5" title="Cargar el seleccionado">
+                            <i class="fas fa-folder-open"></i> Cargar
                         </button>
                     </div>
                 </div>
@@ -268,7 +280,7 @@
     </section>
 
     <!-- ===================================================================== -->
-    <!-- VISTA PREVIA EN VIVO DEL DOCUMENTO / PDF (MISMO ASPECTO QUE INDEX)     -->
+    <!-- VISTA PREVIA EN VIVO DEL DOCUMENTO / PDF                               -->
     <!-- ===================================================================== -->
     <div id="preview-wrapper" class="py-8 px-4 overflow-x-auto">
         <div class="no-print text-center mb-3 text-xs font-bold uppercase tracking-wider text-slate-500">
@@ -277,7 +289,7 @@
 
         <div id="pdf-sheet" class="shadow-2xl overflow-hidden bg-slate-100">
             
-            <!-- CABECERA ESTILO HERO DE INDEX.HTML -->
+            <!-- CABECERA -->
             <header class="bg-gradient-to-r from-slate-950 via-califa-navy to-slate-900 text-white px-8 py-5 border-b-4 border-califa-yellow flex items-center justify-between">
                 <div>
                     <div class="flex items-center gap-2 mb-1.5">
@@ -298,11 +310,11 @@
 
                 <div class="text-right">
                     <div class="text-xs font-black uppercase text-califa-yellow tracking-wider">Elige tu Plan</div>
-                    <div class="text-[11px] text-slate-300 font-medium">CALIFA MOUNTAIN FESTIVAL</div>
+                    <div class="text-[11px] text-slate-300 font-medium">Córdoba · Deporte, Naturaleza y Élite</div>
                 </div>
             </header>
 
-            <!-- SECCIÓN TARIFAS (IDÉNTICA A #tarifas DE INDEX.HTML) -->
+            <!-- SECCIÓN TARIFAS -->
             <main class="px-6 py-5 flex-grow flex flex-col justify-center bg-slate-100">
                 <div class="text-center mb-5">
                     <h2 class="text-2xl font-black uppercase text-slate-900 leading-none">
@@ -423,7 +435,7 @@
                 </p>
             </main>
 
-            <!-- FOOTER ESTILO INDEX.HTML -->
+            <!-- FOOTER -->
             <footer class="bg-califa-red border-t-4 border-califa-yellow px-8 py-3 text-white flex items-center justify-between text-xs">
                 <div class="font-black uppercase tracking-wide">
                     ¿Listo para hacer historia con nosotros?
@@ -438,15 +450,12 @@
     </div>
 
     <!-- ===================================================================== -->
-    <!-- LÓGICA DE FIREBASE FIRESTORE Y RENDERIZADO EN TIEMPO REAL             -->
+    <!-- LÓGICA DE FIREBASE FIRESTORE Y SELECT DROPDOWN                        -->
     <!-- ===================================================================== -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
         import { getFirestore, doc, getDoc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
 
-        // =====================================================================
-        // 1. CONFIGURACIÓN DE TU PROYECTO FIREBASE (REEMPLAZA CON TUS CREDENCIALES)
-        // =====================================================================
         const firebaseConfig = {
             apiKey: "AIzaSyCqnQcvGjRccQ7PgfMgH8NAldYD4o4p9Jw",
             authDomain: "hilandopixel-patrocinios.firebaseapp.com",
@@ -456,12 +465,6 @@
             appId: "1:219555001672:web:ab63a0e4bb3a348876af7d"
         };
 
-
-        // =====================================================================
-        // 2. VALORES POR DEFECTO (ESTRUCTURA EN FIRESTORE)
-        // Ruta base: presupuestos -> califamountainfestival27 -> base -> tarifas
-        // Ruta alias: presupuestos -> califamountainfestival27 -> {alias} -> tarifas
-        // =====================================================================
         const DEFAULT_TARIFAS = {
             exclusivo: {
                 precio: "3000",
@@ -563,6 +566,7 @@
                 if (typeof data.meta.cliente === "string") document.getElementById("input-cliente").value = data.meta.cliente;
                 if (typeof data.meta.sufijo === "string") document.getElementById("input-sufijo-precio").value = data.meta.sufijo;
                 if (typeof data.meta.notaPie === "string") document.getElementById("input-nota-pie").value = data.meta.notaPie;
+                if (typeof data.meta.alias === "string") document.getElementById("input-alias").value = data.meta.alias;
             }
 
             renderPreview();
@@ -643,58 +647,83 @@
             gridEl.style.gridTemplateColumns = `repeat(${Math.max(1, visibleCount)}, minmax(0, 1fr))`;
         }
 
-        // Cargar valores por defecto desde presupuestos/califamountainfestival27/base/tarifas
+        // Lee los presupuestos registrados dentro del documento "califamountainfestival27"
+        async function updateAliasSelect(currentAlias = "base") {
+            const selectEl = document.getElementById("select-alias");
+            try {
+                const metaDocRef = doc(db, "presupuestos", "califamountainfestival27");
+                const snap = await getDoc(metaDocRef);
+                
+                let listaAlias = ["base"];
+                if (snap.exists() && Array.isArray(snap.data().listaAlias)) {
+                    listaAlias = snap.data().listaAlias;
+                }
+
+                selectEl.innerHTML = '<option value="">-- Seleccionar presupuesto --</option>';
+                listaAlias.forEach(alias => {
+                    const opt = document.createElement("option");
+                    opt.value = alias;
+                    opt.textContent = alias === "base" ? "base (Plantilla Principal)" : alias;
+                    if (alias === currentAlias) opt.selected = true;
+                    selectEl.appendChild(opt);
+                });
+            } catch (err) {
+                console.error("No se pudo cargar la lista de presupuestos desde califamountainfestival27:", err);
+            }
+        }
+
         async function initFirestore() {
             const statusEl = document.getElementById("firestore-status");
             populateInputs(DEFAULT_TARIFAS);
 
             if (!firebaseConfig.apiKey || firebaseConfig.apiKey === "TU_API_KEY") {
                 statusEl.className = "text-xs font-semibold px-3 py-1 rounded-full bg-amber-950/80 text-amber-300 border border-amber-600/50";
-                statusEl.innerHTML = '<i class="fas fa-exclamation-triangle mr-1"></i> Modo Local (Pega tu firebaseConfig para conectar)';
+                statusEl.innerHTML = '<i class="fas fa-exclamation-triangle mr-1"></i> Modo Local (Pega tu firebaseConfig)';
                 return;
             }
 
             try {
                 const app = initializeApp(firebaseConfig);
                 db = getFirestore(app);
+                
+                // Cargar base por defecto
                 const baseDocRef = doc(db, "presupuestos", "califamountainfestival27", "base", "tarifas");
-
                 const snap = await getDoc(baseDocRef);
                 if (snap.exists()) {
                     baseCache = snap.data();
                     populateInputs(baseCache);
-                    statusEl.className = "text-xs font-semibold px-3 py-1 rounded-full bg-emerald-950 text-emerald-300 border border-emerald-600/50";
-                    statusEl.innerHTML = '<i class="fas fa-check-circle mr-1"></i> Conectado a Firestore (Base cargada)';
-                } else {
-                    statusEl.className = "text-xs font-semibold px-3 py-1 rounded-full bg-amber-950 text-amber-300 border border-amber-600/50";
-                    statusEl.innerHTML = '<i class="fas fa-info-circle mr-1"></i> Conectado (Usando valores locales por defecto)';
                 }
+
+                // Cargar opciones en el select dropdown leyendo de califamountainfestival27
+                await updateAliasSelect("base");
+
+                statusEl.className = "text-xs font-semibold px-3 py-1 rounded-full bg-emerald-950 text-emerald-300 border border-emerald-600/50";
+                statusEl.innerHTML = '<i class="fas fa-check-circle mr-1"></i> Conectado a Firestore (califamountainfestival27)';
             } catch (error) {
                 console.error("Error conectando con Firestore:", error);
                 statusEl.className = "text-xs font-semibold px-3 py-1 rounded-full bg-red-950 text-red-300 border border-red-600/50";
-                statusEl.innerHTML = '<i class="fas fa-times-circle mr-1"></i> Error de lectura en Firestore';
+                statusEl.innerHTML = '<i class="fas fa-times-circle mr-1"></i> Error de conexión Firestore';
             }
         }
 
-        // GUARDAR PRESUPUESTO EN FIRESTORE CON ALIAS AL NIVEL DE "base"
-        // Ruta resultante: presupuestos / califamountainfestival27 / {alias} / tarifas
+        // GUARDAR PRESUPUESTO Y REGISTRARLO EN califamountainfestival27
         document.getElementById("btn-save-alias").addEventListener("click", async () => {
             const rawAlias = document.getElementById("input-alias").value;
             const aliasId = sanitizeAlias(rawAlias);
 
             if (!aliasId) {
-                showAliasFeedback('<i class="fas fa-exclamation-circle mr-1"></i> Escribe un alias válido antes de guardar (ej: <strong>patrocinio-clinica</strong>).', "error");
+                showAliasFeedback('<i class="fas fa-exclamation-circle mr-1"></i> Escribe un nombre válido para el presupuesto.', "error");
                 document.getElementById("input-alias").focus();
                 return;
             }
 
             if (aliasId === "base") {
-                showAliasFeedback('<i class="fas fa-lock mr-1"></i> El alias <strong>"base"</strong> está reservado como plantilla principal. Usa otro nombre.', "error");
+                showAliasFeedback('<i class="fas fa-lock mr-1"></i> El alias <strong>"base"</strong> es la plantilla principal.', "error");
                 return;
             }
 
             if (!db) {
-                showAliasFeedback('<i class="fas fa-exclamation-triangle mr-1"></i> Configura primero tus credenciales <code>firebaseConfig</code> en el archivo.', "error");
+                showAliasFeedback('<i class="fas fa-exclamation-triangle mr-1"></i> Configura primero <code>firebaseConfig</code>.', "error");
                 return;
             }
 
@@ -703,38 +732,47 @@
 
             try {
                 btn.disabled = true;
-                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Guardando...';
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
 
-                // Mismo nivel que "base": subcolección {aliasId} -> documento "tarifas"
+                // 1. Guardar tarifas en presupuestos / califamountainfestival27 / {aliasId} / tarifas
                 const aliasDocRef = doc(db, "presupuestos", "califamountainfestival27", aliasId, "tarifas");
-                await setDoc(aliasDocRef, {
-                    ...payload,
-                    updatedAt: serverTimestamp()
-                });
+                await setDoc(aliasDocRef, { ...payload, updatedAt: serverTimestamp() });
+
+                // 2. Registrar el alias en el documento principal califamountainfestival27 para que aparezca en el select
+                const metaDocRef = doc(db, "presupuestos", "califamountainfestival27");
+                const metaSnap = await getDoc(metaDocRef);
+                let lista = ["base"];
+                if (metaSnap.exists() && Array.isArray(metaSnap.data().listaAlias)) {
+                    lista = metaSnap.data().listaAlias;
+                }
+                if (!lista.includes(aliasId)) {
+                    lista.push(aliasId);
+                }
+                await setDoc(metaDocRef, { listaAlias: lista }, { merge: true });
+
+                // Actualizar select dropdown
+                await updateAliasSelect(aliasId);
 
                 showAliasFeedback(
-                    `<i class="fas fa-check-circle mr-1"></i> Guardado correctamente en: <code class="bg-slate-950 px-2 py-0.5 rounded text-amber-300">presupuestos/califamountainfestival27/${aliasId}/tarifas</code>`,
+                    `<i class="fas fa-check-circle mr-1"></i> Guardado en <code>califamountainfestival27/${aliasId}/tarifas</code>`,
                     "success"
                 );
             } catch (err) {
                 console.error("Error al guardar alias:", err);
-                showAliasFeedback(
-                    '<i class="fas fa-times-circle mr-1"></i> Error de permisos al guardar. Verifica que las reglas de Firestore permitan escritura en las subcolecciones de alias.',
-                    "error"
-                );
+                showAliasFeedback('<i class="fas fa-times-circle mr-1"></i> Error de permisos al guardar en Firestore.', "error");
             } finally {
                 btn.disabled = false;
-                btn.innerHTML = '<i class="fas fa-save"></i> Guardar Presupuesto';
+                btn.innerHTML = '<i class="fas fa-save"></i> Guardar';
             }
         });
 
-        // CARGAR UN PRESUPUESTO YA GUARDADO POR SU ALIAS
+        // CARGAR EL PRESUPUESTO SELECCIONADO DESDE EL DESPLEGABLE
         document.getElementById("btn-load-alias").addEventListener("click", async () => {
-            const rawAlias = document.getElementById("input-alias").value;
-            const aliasId = sanitizeAlias(rawAlias);
+            const selectEl = document.getElementById("select-alias");
+            const aliasId = selectEl.value;
 
             if (!aliasId) {
-                showAliasFeedback('<i class="fas fa-exclamation-circle mr-1"></i> Escribe el alias que quieres cargar.', "error");
+                showAliasFeedback('<i class="fas fa-exclamation-circle mr-1"></i> Selecciona un presupuesto del desplegable.', "error");
                 return;
             }
 
@@ -744,54 +782,60 @@
             }
 
             try {
+                if (aliasId === "base") {
+                    populateInputs(baseCache);
+                    document.getElementById("input-alias").value = "";
+                    showAliasFeedback('<i class="fas fa-folder-open mr-1"></i> Plantilla base cargada.', "success");
+                    return;
+                }
+
                 const aliasDocRef = doc(db, "presupuestos", "califamountainfestival27", aliasId, "tarifas");
                 const snap = await getDoc(aliasDocRef);
 
                 if (snap.exists()) {
                     populateInputs(snap.data());
-                    showAliasFeedback(
-                        `<i class="fas fa-folder-open mr-1"></i> Presupuesto cargado desde <code class="bg-slate-950 px-2 py-0.5 rounded text-amber-300">presupuestos/califamountainfestival27/${aliasId}/tarifas</code>`,
-                        "success"
-                    );
+                    document.getElementById("input-alias").value = aliasId;
+                    showAliasFeedback(`<i class="fas fa-folder-open mr-1"></i> Presupuesto <strong>${aliasId}</strong> cargado correctamente.`, "success");
                 } else {
-                    showAliasFeedback(
-                        `<i class="fas fa-search mr-1"></i> No existe ningún presupuesto guardado con el alias <strong>${aliasId}</strong>.`,
-                        "error"
-                    );
+                    showAliasFeedback(`<i class="fas fa-search mr-1"></i> No se encontró el documento para <strong>${aliasId}</strong>.`, "error");
                 }
             } catch (err) {
                 console.error("Error al cargar alias:", err);
-                showAliasFeedback('<i class="fas fa-times-circle mr-1"></i> No se pudo leer ese alias desde Firestore.', "error");
+                showAliasFeedback('<i class="fas fa-times-circle mr-1"></i> Error al leer desde Firestore.', "error");
             }
         });
 
-        // Restaurar valores de "base"
+        // Carga automática al cambiar la opción del select dropdown
+        document.getElementById("select-alias").addEventListener("change", (e) => {
+            if (e.target.value) {
+                document.getElementById("btn-load-alias").click();
+            }
+        });
+
         document.getElementById("btn-reset-defaults").addEventListener("click", () => {
             populateInputs(baseCache);
+            document.getElementById("select-alias").value = "base";
             document.getElementById("input-alias").value = "";
-            document.getElementById("input-cliente").value = "";
             document.getElementById("alias-feedback").classList.add("hidden");
             renderPreview();
         });
 
-        // Mostrar / Ocultar editores de contenido
         document.getElementById("toggle-contenido-btn").addEventListener("click", () => {
             document.querySelectorAll(".contenido-editor").forEach(el => el.classList.toggle("hidden"));
         });
 
-        // Escuchar cambios en todos los inputs en tiempo real
         document.querySelectorAll("input, textarea").forEach(input => {
             input.addEventListener("input", renderPreview);
             input.addEventListener("change", renderPreview);
         });
 
-        // Exportar a PDF
         document.getElementById("btn-download-pdf").addEventListener("click", () => {
             const element = document.getElementById("pdf-sheet");
-            const alias = sanitizeAlias(document.getElementById("input-alias").value);
+            const selectAlias = document.getElementById("select-alias").value;
+            const inputAlias = sanitizeAlias(document.getElementById("input-alias").value);
             const cliente = document.getElementById("input-cliente").value.trim();
-            const sufijoNombre = alias || (cliente ? cliente.replace(/[^a-z0-9]/gi, '_') : "");
-            const filename = `Tarifas_Califa_Mountain_Festival_2027${sufijoNombre ? "_" + sufijoNombre : ""}.pdf`;
+            const sufijoNombre = inputAlias || selectAlias || (cliente ? cliente.replace(/[^a-z0-9]/gi, '_') : "");
+            const filename = `Tarifas_Califa_Mountain_Festival_2027${sufijoNombre && sufijoNombre !== 'base' ? "_" + sufijoNombre : ""}.pdf`;
 
             const opt = {
                 margin: 0,

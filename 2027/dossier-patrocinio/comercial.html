@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Tarifas & Generador PDF | Califa Mountain Festival 2027</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Montserrat -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <!-- FontAwesome 6.4.0 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- html2pdf.js para exportación directa a PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Montserrat', 'sans-serif'],
+                    },
+                    colors: {
+                        califa: {
+                            red: '#cc0000',
+                            yellow: '#d9a000',
+                            navy: '#0f172a',
+                            black: '#1e293b',
+                            lightBg: '#f8fafc',
+                            cardBg: '#ffffff'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        /* Hoja A4 Horizontal exacta para la vista previa y exportación PDF */
+        #pdf-sheet {
+            width: 297mm;
+            min-height: 210mm;
+            margin: 0 auto;
+            background-color: #f1f5f9;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            box-sizing: border-box;
+        }
+
+        @media print {
+            @page {
+                size: A4 landscape;
+                margin: 0;
+            }
+            body {
+                background: white !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            .no-print {
+                display: none !important;
+            }
+            #preview-wrapper {
+                padding: 0 !important;
+                background: white !important;
+                overflow: visible !important;
+            }
+            #pdf-sheet {
+                width: 100% !important;
+                min-height: 100vh !important;
+                box-shadow: none !important;
+                margin: 0 !important;
+            }
+        }
+    </style>
+</head>
+<body class="bg-slate-200 text-slate-800 antialiased">
+
+    <!-- ===================================================================== -->
+    <!-- PANEL DE ADMINISTRACIÓN (NO APARECE EN EL PDF)                        -->
+    <!-- ===================================================================== -->
+    <section class="no-print bg-slate-900 text-white border-b-4 border-califa-yellow shadow-2xl">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 py-6">
+            
+            <!-- Cabecera Admin + Estado Firestore -->
+            <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 pb-6 border-b border-slate-700">
+                <div>
+                    <div class="flex flex-wrap items-center gap-2">
+                        <span class="bg-califa-yellow text-slate-950 text-xs font-black px-3 py-1 rounded-full uppercase tracking-wider">Backend Admin</span>
+                        <span id="firestore-status" class="text-xs font-semibold px-3 py-1 rounded-full bg-slate-800 text-amber-300 border border-slate-700">
+                            <i class="fas fa-circle-notch fa-spin mr-1"></i> Conectando con Firestore...
+                        </span>
+                    </div>
+                    <h1 class="text-2xl sm:text-3xl font-black uppercase mt-2 tracking-tight">
+                        Gestor de Tarifas & <span class="text-califa-yellow">Generador PDF</span>
+                    </h1>
+                    <p class="text-xs text-slate-400 mt-1">
+                        Base por defecto: <code class="text-amber-300 bg-slate-800 px-2 py-0.5 rounded">presupuestos / califamountainfestival27 / base / tarifas</code>
+                    </p>
+                </div>
+
+                <!-- Botones de Exportación y Reset -->
+                <div class="flex flex-wrap items-center gap-3">
+                    <button id="btn-reset-defaults" type="button" class="bg-slate-700 hover:bg-slate-600 text-slate-200 font-bold text-xs uppercase tracking-wider px-4 py-3 rounded-lg transition flex items-center gap-2">
+                        <i class="fas fa-undo"></i> Cargar Base
+                    </button>
+                    <button id="btn-download-pdf" type="button" class="bg-califa-red hover:bg-red-700 text-white font-black text-xs uppercase tracking-wider px-5 py-3 rounded-lg shadow-lg transition flex items-center gap-2">
+                        <i class="fas fa-file-pdf text-sm"></i> Descargar PDF
+                    </button>
+                    <button onclick="window.print()" type="button" class="bg-califa-yellow hover:bg-amber-400 text-slate-950 font-black text-xs uppercase tracking-wider px-4 py-3 rounded-lg shadow-lg transition flex items-center gap-2" title="Imprimir o Guardar como PDF vectorial">
+                        <i class="fas fa-print"></i> Imprimir / PDF Vectorial
+                    </button>
+                </div>
+            </div>
+
+            <!-- BLOQUE DE GUARDADO EN FIRESTORE CON ALIAS (AL NIVEL DE "base") -->
+            <div class="bg-slate-800/80 border border-emerald-500/40 rounded-xl p-4 my-5">
+                <div class="flex flex-col lg:flex-row lg:items-end gap-3">
+                    <div class="flex-grow">
+                        <label for="input-alias" class="block text-xs font-black uppercase text-emerald-400 mb-1">
+                            <i class="fas fa-bookmark mr-1"></i> Alias del Presupuesto (Se guarda al nivel de <code class="text-amber-300">base</code>)
+                        </label>
+                        <div class="flex items-center bg-slate-950 border border-slate-700 focus-within:border-emerald-400 rounded-lg overflow-hidden">
+                            <span class="text-[11px] text-slate-500 pl-3 pr-1 select-none hidden sm:inline">presupuestos/califamountainfestival27/</span>
+                            <input type="text" id="input-alias" placeholder="ej: patrocinio-empresa-x" 
+                                   class="w-full bg-transparent px-2 py-2.5 text-sm font-bold text-white placeholder-slate-500 focus:outline-none">
+                            <span class="text-[11px] text-slate-500 pr-3 pl-1 select-none">/tarifas</span>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-wrap gap-2">
+                        <button id="btn-save-alias" type="button" class="bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs uppercase tracking-wider px-5 py-3 rounded-lg shadow-md transition flex items-center gap-2">
+                            <i class="fas fa-save"></i> Guardar Presupuesto
+                        </button>
+                        <button id="btn-load-alias" type="button" class="bg-slate-700 hover:bg-slate-600 text-white font-bold text-xs uppercase tracking-wider px-4 py-3 rounded-lg transition flex items-center gap-2" title="Cargar un presupuesto ya guardado con este alias">
+                            <i class="fas fa-folder-open"></i> Cargar Alias
+                        </button>
+                    </div>
+                </div>
+                <p id="alias-feedback" class="text-xs mt-2 hidden"></p>
+            </div>
+
+            <!-- Opciones Generales del Presupuesto -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 pb-5 border-b border-slate-800">
+                <div>
+                    <label class="block text-xs font-bold uppercase text-slate-400 mb-1">Empresa / Cliente (Opcional en cabecera PDF)</label>
+                    <input type="text" id="input-cliente" placeholder="Ej: Deportes Córdoba S.L. (dejar vacío para general)" 
+                           class="w-full bg-slate-800 border border-slate-700 focus:border-califa-yellow rounded-lg px-3 py-2 text-sm text-white placeholder-slate-500 focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold uppercase text-slate-400 mb-1">Símbolo / Texto junto al precio</label>
+                    <input type="text" id="input-sufijo-precio" value="€ + IVA" 
+                           class="w-full bg-slate-800 border border-slate-700 focus:border-califa-yellow rounded-lg px-3 py-2 text-sm text-white focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold uppercase text-slate-400 mb-1">Nota legal al pie de tarifas</label>
+                    <input type="text" id="input-nota-pie" value="* Precios base de patrocinio oficial Campeonato de España CXM 2027. Impuestos no incluidos." 
+                           class="w-full bg-slate-800 border border-slate-700 focus:border-califa-yellow rounded-lg px-3 py-2 text-sm text-white focus:outline-none">
+                </div>
+            </div>
+
+            <!-- Inputs de Precios y Contenidos por cada Tarifa -->
+            <div class="pt-5">
+                <div class="flex items-center justify-between mb-3">
+                    <h2 class="text-sm font-black uppercase tracking-wider text-califa-yellow">
+                        <i class="fas fa-tags mr-1.5"></i> Configuración de Tarifas (Precios y Beneficios)
+                    </h2>
+                    <button type="button" id="toggle-contenido-btn" class="text-xs text-slate-300 hover:text-white underline">
+                        <i class="fas fa-edit mr-1"></i> Mostrar / Ocultar edición de textos de cada tarifa
+                    </button>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+                    <!-- INPUT EXCLUSIVO -->
+                    <div class="bg-slate-800/90 border-2 border-amber-400/70 rounded-xl p-4">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="font-black uppercase text-amber-400 text-sm">Exclusivo</span>
+                            <label class="inline-flex items-center text-[11px] text-slate-300 cursor-pointer">
+                                <input type="checkbox" id="show-exclusivo" checked class="mr-1 accent-amber-400"> Visible
+                            </label>
+                        </div>
+                        <label class="block text-[11px] uppercase text-slate-400 font-bold mb-1">Precio (€)</label>
+                        <input type="text" id="precio-exclusivo" value="3000" 
+                               class="w-full bg-slate-950 border border-amber-400/50 focus:border-amber-400 rounded-lg px-3 py-2 text-lg font-black text-amber-300 focus:outline-none">
+                        <div class="contenido-editor hidden mt-3">
+                            <label class="block text-[11px] uppercase text-slate-400 font-bold mb-1">Contenido (1 línea = 1 punto)</label>
+                            <textarea id="contenido-exclusivo" rows="6" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2 text-xs text-slate-200 focus:outline-none"></textarea>
+                        </div>
+                    </div>
+
+                    <!-- INPUT PREMIUM -->
+                    <div class="bg-slate-800/90 border-2 border-califa-red/80 rounded-xl p-4">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="font-black uppercase text-red-400 text-sm">Premium</span>
+                            <label class="inline-flex items-center text-[11px] text-slate-300 cursor-pointer">
+                                <input type="checkbox" id="show-premium" checked class="mr-1 accent-red-500"> Visible
+                            </label>
+                        </div>
+                        <label class="block text-[11px] uppercase text-slate-400 font-bold mb-1">Precio (€)</label>
+                        <input type="text" id="precio-premium" value="2000" 
+                               class="w-full bg-slate-950 border border-califa-red/60 focus:border-califa-red rounded-lg px-3 py-2 text-lg font-black text-white focus:outline-none">
+                        <div class="contenido-editor hidden mt-3">
+                            <label class="block text-[11px] uppercase text-slate-400 font-bold mb-1">Contenido (1 línea = 1 punto)</label>
+                            <textarea id="contenido-premium" rows="6" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2 text-xs text-slate-200 focus:outline-none"></textarea>
+                        </div>
+                    </div>
+
+                    <!-- INPUT GOLD -->
+                    <div class="bg-slate-800/90 border border-amber-600/60 rounded-xl p-4">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="font-black uppercase text-amber-500 text-sm">Gold</span>
+                            <label class="inline-flex items-center text-[11px] text-slate-300 cursor-pointer">
+                                <input type="checkbox" id="show-gold" checked class="mr-1 accent-amber-500"> Visible
+                            </label>
+                        </div>
+                        <label class="block text-[11px] uppercase text-slate-400 font-bold mb-1">Precio (€)</label>
+                        <input type="text" id="precio-gold" value="1200" 
+                               class="w-full bg-slate-950 border border-slate-700 focus:border-amber-500 rounded-lg px-3 py-2 text-lg font-black text-white focus:outline-none">
+                        <div class="contenido-editor hidden mt-3">
+                            <label class="block text-[11px] uppercase text-slate-400 font-bold mb-1">Contenido (1 línea = 1 punto)</label>
+                            <textarea id="contenido-gold" rows="6" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2 text-xs text-slate-200 focus:outline-none"></textarea>
+                        </div>
+                    </div>
+
+                    <!-- INPUT SILVER -->
+                    <div class="bg-slate-800/90 border border-slate-600 rounded-xl p-4">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="font-black uppercase text-slate-300 text-sm">Silver</span>
+                            <label class="inline-flex items-center text-[11px] text-slate-300 cursor-pointer">
+                                <input type="checkbox" id="show-silver" checked class="mr-1 accent-slate-400"> Visible
+                            </label>
+                        </div>
+                        <label class="block text-[11px] uppercase text-slate-400 font-bold mb-1">Precio (€)</label>
+                        <input type="text" id="precio-silver" value="600" 
+                               class="w-full bg-slate-950 border border-slate-700 focus:border-slate-400 rounded-lg px-3 py-2 text-lg font-black text-white focus:outline-none">
+                        <div class="contenido-editor hidden mt-3">
+                            <label class="block text-[11px] uppercase text-slate-400 font-bold mb-1">Contenido (1 línea = 1 punto)</label>
+                            <textarea id="contenido-silver" rows="6" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2 text-xs text-slate-200 focus:outline-none"></textarea>
+                        </div>
+                    </div>
+
+                    <!-- INPUT COLABORADOR -->
+                    <div class="bg-slate-800/90 border border-slate-700 rounded-xl p-4">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="font-black uppercase text-slate-400 text-sm">Colaborador</span>
+                            <label class="inline-flex items-center text-[11px] text-slate-300 cursor-pointer">
+                                <input type="checkbox" id="show-colaborador" checked class="mr-1 accent-slate-400"> Visible
+                            </label>
+                        </div>
+                        <label class="block text-[11px] uppercase text-slate-400 font-bold mb-1">Precio (€)</label>
+                        <input type="text" id="precio-colaborador" value="350" 
+                               class="w-full bg-slate-950 border border-slate-700 focus:border-slate-400 rounded-lg px-3 py-2 text-lg font-black text-white focus:outline-none">
+                        <div class="contenido-editor hidden mt-3">
+                            <label class="block text-[11px] uppercase text-slate-400 font-bold mb-1">Contenido (1 línea = 1 punto)</label>
+                            <textarea id="contenido-colaborador" rows="6" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2 text-xs text-slate-200 focus:outline-none"></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- VISTA PREVIA EN VIVO DEL DOCUMENTO / PDF (MISMO ASPECTO QUE INDEX)     -->
+    <!-- ===================================================================== -->
+    <div id="preview-wrapper" class="py-8 px-4 overflow-x-auto">
+        <div class="no-print text-center mb-3 text-xs font-bold uppercase tracking-wider text-slate-500">
+            <i class="fas fa-eye mr-1"></i> Vista previa exacta del documento PDF (Formato A4 Horizontal)
+        </div>
+
+        <div id="pdf-sheet" class="shadow-2xl overflow-hidden bg-slate-100">
+            
+            <!-- CABECERA ESTILO HERO DE INDEX.HTML -->
+            <header class="bg-gradient-to-r from-slate-950 via-califa-navy to-slate-900 text-white px-8 py-5 border-b-4 border-califa-yellow flex items-center justify-between">
+                <div>
+                    <div class="flex items-center gap-2 mb-1.5">
+                        <span class="bg-califa-yellow text-slate-950 font-black px-3 py-0.5 rounded-full text-[10px] uppercase tracking-wider">
+                            Campeonato de España CXM 2027
+                        </span>
+                        <span class="bg-califa-red text-white font-bold px-3 py-0.5 rounded-full text-[10px] uppercase tracking-wider">
+                            1.2.3 OCT 2027
+                        </span>
+                    </div>
+                    <h1 class="text-2xl font-black uppercase tracking-tight leading-none">
+                        Califa Mountain Festival <span class="text-califa-yellow">| Dossier de Patrocinio</span>
+                    </h1>
+                    <p id="preview-cliente-banner" class="hidden text-xs font-bold text-amber-300 mt-1.5 uppercase tracking-wide">
+                        <i class="fas fa-building mr-1"></i> Propuesta personalizada para: <span id="preview-cliente-nombre" class="text-white underline"></span>
+                    </p>
+                </div>
+
+                <div class="text-right">
+                    <div class="text-xs font-black uppercase text-califa-yellow tracking-wider">Elige tu Plan</div>
+                    <div class="text-[11px] text-slate-300 font-medium">CALIFA MOUNTAIN FESTIVAL</div>
+                </div>
+            </header>
+
+            <!-- SECCIÓN TARIFAS (IDÉNTICA A #tarifas DE INDEX.HTML) -->
+            <main class="px-6 py-5 flex-grow flex flex-col justify-center bg-slate-100">
+                <div class="text-center mb-5">
+                    <h2 class="text-2xl font-black uppercase text-slate-900 leading-none">
+                        Elige tu <span class="text-califa-red">Plan</span>
+                    </h2>
+                    <div class="w-20 h-1 bg-califa-yellow mx-auto rounded-full mt-2"></div>
+                </div>
+
+                <!-- GRID DE TARIFAS -->
+                <div id="cards-grid" class="grid gap-3.5 items-stretch" style="grid-template-columns: repeat(5, minmax(0, 1fr));">
+                    
+                    <!-- TARJETA 1: EXCLUSIVE -->
+                    <div id="card-exclusivo" class="bg-white rounded-2xl border-2 border-amber-400 shadow-lg flex flex-col relative overflow-hidden">
+                        <div class="bg-amber-400 text-slate-950 text-center text-[9px] font-black py-1 uppercase tracking-widest">
+                            Max 1 Patrocinador
+                        </div>
+                        <div class="p-3.5 border-b border-slate-100 text-center">
+                            <h3 class="text-lg font-black uppercase text-amber-500">Exclusive</h3>
+                            <div class="mt-1">
+                                <span id="view-precio-exclusivo" class="text-2xl font-black text-slate-900">3.000</span>
+                                <span class="view-sufijo text-[11px] font-bold text-slate-500">€ + IVA</span>
+                            </div>
+                        </div>
+                        <div class="p-3.5 flex-grow bg-slate-50/60">
+                            <ul id="view-lista-exclusivo" class="space-y-2 text-[10.5px] leading-snug text-slate-700"></ul>
+                        </div>
+                        <div class="p-3 bg-slate-50/60 mt-auto">
+                            <div class="w-full text-center bg-amber-400 text-slate-950 font-black uppercase py-2 rounded-lg text-[10px] tracking-wider shadow-sm">
+                                Patrocinador Principal
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- TARJETA 2: PREMIUM -->
+                    <div id="card-premium" class="bg-white rounded-2xl border-2 border-califa-red/40 shadow-md flex flex-col relative overflow-hidden">
+                        <div class="bg-califa-red text-white text-center text-[9px] font-bold py-1 uppercase tracking-widest">
+                            Max 2 Patrocinadores
+                        </div>
+                        <div class="p-3.5 border-b border-slate-100 text-center">
+                            <h3 class="text-lg font-black uppercase text-califa-red">Premium</h3>
+                            <div class="mt-1">
+                                <span id="view-precio-premium" class="text-2xl font-black text-slate-900">2.000</span>
+                                <span class="view-sufijo text-[11px] font-bold text-slate-500">€ + IVA</span>
+                            </div>
+                        </div>
+                        <div class="p-3.5 flex-grow">
+                            <ul id="view-lista-premium" class="space-y-2 text-[10.5px] leading-snug text-slate-600"></ul>
+                        </div>
+                        <div class="p-3 mt-auto">
+                            <div class="w-full text-center bg-califa-red text-white font-bold uppercase py-2 rounded-lg text-[10px] tracking-wider shadow-sm">
+                                Plan Premium
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- TARJETA 3: GOLD -->
+                    <div id="card-gold" class="bg-white rounded-2xl border border-amber-500/50 shadow-md flex flex-col relative overflow-hidden">
+                        <div class="p-3.5 pt-5 border-b border-slate-100 text-center">
+                            <h3 class="text-lg font-black uppercase text-amber-700">Gold</h3>
+                            <div class="mt-1">
+                                <span id="view-precio-gold" class="text-2xl font-black text-slate-900">1.200</span>
+                                <span class="view-sufijo text-[11px] font-bold text-slate-500">€ + IVA</span>
+                            </div>
+                        </div>
+                        <div class="p-3.5 flex-grow">
+                            <ul id="view-lista-gold" class="space-y-2 text-[10.5px] leading-snug text-slate-600"></ul>
+                        </div>
+                        <div class="p-3 mt-auto">
+                            <div class="w-full text-center border-2 border-amber-600 text-amber-700 font-bold uppercase py-1.5 rounded-lg text-[10px] tracking-wider">
+                                Plan Gold
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- TARJETA 4: SILVER -->
+                    <div id="card-silver" class="bg-white rounded-2xl border border-slate-300 shadow-md flex flex-col relative overflow-hidden">
+                        <div class="p-3.5 pt-5 border-b border-slate-100 text-center">
+                            <h3 class="text-lg font-black uppercase text-slate-700">Silver</h3>
+                            <div class="mt-1">
+                                <span id="view-precio-silver" class="text-2xl font-black text-slate-900">600</span>
+                                <span class="view-sufijo text-[11px] font-bold text-slate-500">€ + IVA</span>
+                            </div>
+                        </div>
+                        <div class="p-3.5 flex-grow">
+                            <ul id="view-lista-silver" class="space-y-2 text-[10.5px] leading-snug text-slate-600"></ul>
+                        </div>
+                        <div class="p-3 mt-auto">
+                            <div class="w-full text-center border-2 border-slate-400 text-slate-700 font-bold uppercase py-1.5 rounded-lg text-[10px] tracking-wider">
+                                Plan Silver
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- TARJETA 5: COLABORADOR -->
+                    <div id="card-colaborador" class="bg-white rounded-2xl border border-slate-200 shadow-md flex flex-col relative overflow-hidden">
+                        <div class="p-3.5 pt-5 border-b border-slate-100 text-center">
+                            <h3 class="text-lg font-black uppercase text-slate-700">Colaborador</h3>
+                            <div class="mt-1">
+                                <span id="view-precio-colaborador" class="text-2xl font-black text-slate-900">350</span>
+                                <span class="view-sufijo text-[11px] font-bold text-slate-500">€ + IVA</span>
+                            </div>
+                        </div>
+                        <div class="p-3.5 flex-grow">
+                            <ul id="view-lista-colaborador" class="space-y-2 text-[10.5px] leading-snug text-slate-600"></ul>
+                        </div>
+                        <div class="p-3 mt-auto">
+                            <div class="w-full text-center border-2 border-slate-300 text-slate-700 font-bold uppercase py-1.5 rounded-lg text-[10px] tracking-wider">
+                                Plan Colaborador
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Nota al pie -->
+                <p id="view-nota-pie" class="text-center text-[10px] text-slate-500 font-semibold mt-3">
+                    * Precios base de patrocinio oficial Campeonato de España CXM 2027. Impuestos no incluidos.
+                </p>
+            </main>
+
+            <!-- FOOTER ESTILO INDEX.HTML -->
+            <footer class="bg-califa-red border-t-4 border-califa-yellow px-8 py-3 text-white flex items-center justify-between text-xs">
+                <div class="font-black uppercase tracking-wide">
+                    ¿Listo para hacer historia con nosotros?
+                </div>
+                <div class="flex items-center gap-5 font-semibold text-[11px]">
+                    <span><i class="fas fa-envelope text-califa-yellow mr-1"></i> rsrunningseruies@gmail.com</span>
+                    <span><i class="fab fa-whatsapp text-califa-yellow mr-1"></i> +34 651 533 735</span>
+                    <span><i class="fas fa-globe text-califa-yellow mr-1"></i> califamountainfestival.com</span>
+                </div>
+            </footer>
+        </div>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- LÓGICA DE FIREBASE FIRESTORE Y RENDERIZADO EN TIEMPO REAL             -->
+    <!-- ===================================================================== -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
+        import { getFirestore, doc, getDoc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
+
+        // =====================================================================
+        // 1. CONFIGURACIÓN DE TU PROYECTO FIREBASE (REEMPLAZA CON TUS CREDENCIALES)
+        // =====================================================================
+        const firebaseConfig = {
+            apiKey: "AIzaSyCqnQcvGjRccQ7PgfMgH8NAldYD4o4p9Jw",
+            authDomain: "hilandopixel-patrocinios.firebaseapp.com",
+            projectId: "hilandopixel-patrocinios",
+            storageBucket: "hilandopixel-patrocinios.firebasestorage.app",
+            messagingSenderId: "219555001672",
+            appId: "1:219555001672:web:ab63a0e4bb3a348876af7d"
+        };
+
+
+        // =====================================================================
+        // 2. VALORES POR DEFECTO (ESTRUCTURA EN FIRESTORE)
+        // Ruta base: presupuestos -> califamountainfestival27 -> base -> tarifas
+        // Ruta alias: presupuestos -> califamountainfestival27 -> {alias} -> tarifas
+        // =====================================================================
+        const DEFAULT_TARIFAS = {
+            exclusivo: {
+                precio: "3000",
+                contenido: [
+                    'Naming: "Prueba X Califa Mountain Festival"',
+                    '1 Representante en actos oficiales',
+                    'Logo DESTACADO en TODOS los soportes / Prendas',
+                    'Logo DESTACADO en ARCO DE META DIGITAL',
+                    'Mención en TODAS las publicaciones Redes Sociales',
+                    'STAND en feria',
+                    'LONA | BANDERA en zona de meta',
+                    'Logo en EMAIL confirmación inscripciones'
+                ].join("\n")
+            },
+            premium: {
+                precio: "2000",
+                contenido: [
+                    '1 Representante en actos oficiales',
+                    'Logo GRANDE en TODOS los soportes / Prendas',
+                    'Logo GRANDE en ARCO DE META DIGITAL',
+                    'Mención en TODAS las publicaciones Redes Sociales',
+                    'STAND en feria',
+                    'LONA | BANDERA en zona de meta',
+                    'Logo en EMAIL confirmación inscripciones'
+                ].join("\n")
+            },
+            gold: {
+                precio: "1200",
+                contenido: [
+                    '1 Representante en actos oficiales',
+                    'Logo MEDIANO en TODOS los soportes / Prendas',
+                    'Logo MEDIANO en ARCO DE META DIGITAL',
+                    'Presencia en Redes Sociales',
+                    'STAND en feria',
+                    'LONA | BANDERA en zona de meta',
+                    'Logo en EMAIL confirmación'
+                ].join("\n")
+            },
+            silver: {
+                precio: "600",
+                contenido: [
+                    'Logo MEDIANO en cartelería',
+                    'Logo en ARCO DE META DIGITAL',
+                    'Publicación específica en redes sociales',
+                    'STAND en feria'
+                ].join("\n")
+            },
+            colaborador: {
+                precio: "350",
+                contenido: [
+                    'Logo PEQUEÑO en cartelería',
+                    'Publicación específica en redes sociales'
+                ].join("\n")
+            }
+        };
+
+        const TIERS = ["exclusivo", "premium", "gold", "silver", "colaborador"];
+        let db = null;
+        let baseCache = structuredClone(DEFAULT_TARIFAS);
+
+        function formatPrecio(valor) {
+            const limpio = String(valor || "").trim();
+            if (/^\d+$/.test(limpio)) {
+                return Number(limpio).toLocaleString("es-ES");
+            }
+            return limpio || "0";
+        }
+
+        function sanitizeAlias(raw) {
+            return raw
+                .trim()
+                .toLowerCase()
+                .normalize("NFD")
+                .replace(/[\u0300-\u036f]/g, "")
+                .replace(/[^a-z0-9-_]+/g, "-")
+                .replace(/^-+|-+$/g, "");
+        }
+
+        function showAliasFeedback(message, type = "success") {
+            const el = document.getElementById("alias-feedback");
+            el.classList.remove("hidden", "text-emerald-400", "text-red-400", "text-amber-300");
+            if (type === "success") el.classList.add("text-emerald-400");
+            else if (type === "error") el.classList.add("text-red-400");
+            else el.classList.add("text-amber-300");
+            el.innerHTML = message;
+        }
+
+        function populateInputs(data) {
+            TIERS.forEach(tier => {
+                const item = data[tier] || DEFAULT_TARIFAS[tier];
+                document.getElementById(`precio-${tier}`).value = item.precio ?? DEFAULT_TARIFAS[tier].precio;
+                document.getElementById(`contenido-${tier}`).value = item.contenido ?? DEFAULT_TARIFAS[tier].contenido;
+
+                const isVisible = data.meta?.visibilidad?.[tier];
+                document.getElementById(`show-${tier}`).checked = typeof isVisible === "boolean" ? isVisible : true;
+            });
+
+            if (data.meta) {
+                if (typeof data.meta.cliente === "string") document.getElementById("input-cliente").value = data.meta.cliente;
+                if (typeof data.meta.sufijo === "string") document.getElementById("input-sufijo-precio").value = data.meta.sufijo;
+                if (typeof data.meta.notaPie === "string") document.getElementById("input-nota-pie").value = data.meta.notaPie;
+            }
+
+            renderPreview();
+        }
+
+        function collectFormData(aliasOriginal, aliasSanitizado) {
+            const payload = {};
+            const visibilidad = {};
+
+            TIERS.forEach(tier => {
+                payload[tier] = {
+                    precio: document.getElementById(`precio-${tier}`).value.trim(),
+                    contenido: document.getElementById(`contenido-${tier}`).value
+                };
+                visibilidad[tier] = document.getElementById(`show-${tier}`).checked;
+            });
+
+            payload.meta = {
+                alias: aliasOriginal,
+                aliasId: aliasSanitizado,
+                cliente: document.getElementById("input-cliente").value.trim(),
+                sufijo: document.getElementById("input-sufijo-precio").value,
+                notaPie: document.getElementById("input-nota-pie").value,
+                visibilidad
+            };
+
+            return payload;
+        }
+
+        function renderPreview() {
+            const sufijo = document.getElementById("input-sufijo-precio").value;
+            const cliente = document.getElementById("input-cliente").value.trim();
+            const notaPie = document.getElementById("input-nota-pie").value;
+
+            const bannerCliente = document.getElementById("preview-cliente-banner");
+            if (cliente) {
+                document.getElementById("preview-cliente-nombre").textContent = cliente;
+                bannerCliente.classList.remove("hidden");
+            } else {
+                bannerCliente.classList.add("hidden");
+            }
+
+            document.querySelectorAll(".view-sufijo").forEach(el => el.textContent = ` ${sufijo}`);
+            document.getElementById("view-nota-pie").textContent = notaPie;
+
+            let visibleCount = 0;
+
+            TIERS.forEach(tier => {
+                const isVisible = document.getElementById(`show-${tier}`).checked;
+                const cardEl = document.getElementById(`card-${tier}`);
+                if (isVisible) {
+                    cardEl.classList.remove("hidden");
+                    visibleCount++;
+                } else {
+                    cardEl.classList.add("hidden");
+                }
+
+                const rawPrecio = document.getElementById(`precio-${tier}`).value;
+                document.getElementById(`view-precio-${tier}`).textContent = formatPrecio(rawPrecio);
+
+                const rawContenido = document.getElementById(`contenido-${tier}`).value;
+                const lines = rawContenido.split("\n").map(l => l.trim()).filter(Boolean);
+                const ulEl = document.getElementById(`view-lista-${tier}`);
+
+                ulEl.innerHTML = lines.map((line, index) => {
+                    if (tier === "exclusivo" && index === 0 && line.toLowerCase().includes("naming")) {
+                        return `<li class="flex items-start text-amber-600 font-black"><i class="fas fa-star text-amber-500 mt-0.5 mr-2 flex-shrink-0"></i><span>${line}</span></li>`;
+                    }
+                    if (line.includes("ARCO DE META DIGITAL") && tier !== "silver") {
+                        const highlightClass = tier === "exclusivo" ? "text-amber-600 font-black" : (tier === "premium" ? "text-califa-red font-black" : "text-amber-700 font-black");
+                        return `<li class="flex items-start ${highlightClass}"><i class="fas fa-check text-califa-red mt-0.5 mr-2 flex-shrink-0"></i><span>${line}</span></li>`;
+                    }
+                    return `<li class="flex items-start"><i class="fas fa-check text-califa-red mt-0.5 mr-2 flex-shrink-0"></i><span>${line}</span></li>`;
+                }).join("");
+            });
+
+            const gridEl = document.getElementById("cards-grid");
+            gridEl.style.gridTemplateColumns = `repeat(${Math.max(1, visibleCount)}, minmax(0, 1fr))`;
+        }
+
+        // Cargar valores por defecto desde presupuestos/califamountainfestival27/base/tarifas
+        async function initFirestore() {
+            const statusEl = document.getElementById("firestore-status");
+            populateInputs(DEFAULT_TARIFAS);
+
+            if (!firebaseConfig.apiKey || firebaseConfig.apiKey === "TU_API_KEY") {
+                statusEl.className = "text-xs font-semibold px-3 py-1 rounded-full bg-amber-950/80 text-amber-300 border border-amber-600/50";
+                statusEl.innerHTML = '<i class="fas fa-exclamation-triangle mr-1"></i> Modo Local (Pega tu firebaseConfig para conectar)';
+                return;
+            }
+
+            try {
+                const app = initializeApp(firebaseConfig);
+                db = getFirestore(app);
+                const baseDocRef = doc(db, "presupuestos", "califamountainfestival27", "base", "tarifas");
+
+                const snap = await getDoc(baseDocRef);
+                if (snap.exists()) {
+                    baseCache = snap.data();
+                    populateInputs(baseCache);
+                    statusEl.className = "text-xs font-semibold px-3 py-1 rounded-full bg-emerald-950 text-emerald-300 border border-emerald-600/50";
+                    statusEl.innerHTML = '<i class="fas fa-check-circle mr-1"></i> Conectado a Firestore (Base cargada)';
+                } else {
+                    statusEl.className = "text-xs font-semibold px-3 py-1 rounded-full bg-amber-950 text-amber-300 border border-amber-600/50";
+                    statusEl.innerHTML = '<i class="fas fa-info-circle mr-1"></i> Conectado (Usando valores locales por defecto)';
+                }
+            } catch (error) {
+                console.error("Error conectando con Firestore:", error);
+                statusEl.className = "text-xs font-semibold px-3 py-1 rounded-full bg-red-950 text-red-300 border border-red-600/50";
+                statusEl.innerHTML = '<i class="fas fa-times-circle mr-1"></i> Error de lectura en Firestore';
+            }
+        }
+
+        // GUARDAR PRESUPUESTO EN FIRESTORE CON ALIAS AL NIVEL DE "base"
+        // Ruta resultante: presupuestos / califamountainfestival27 / {alias} / tarifas
+        document.getElementById("btn-save-alias").addEventListener("click", async () => {
+            const rawAlias = document.getElementById("input-alias").value;
+            const aliasId = sanitizeAlias(rawAlias);
+
+            if (!aliasId) {
+                showAliasFeedback('<i class="fas fa-exclamation-circle mr-1"></i> Escribe un alias válido antes de guardar (ej: <strong>patrocinio-clinica</strong>).', "error");
+                document.getElementById("input-alias").focus();
+                return;
+            }
+
+            if (aliasId === "base") {
+                showAliasFeedback('<i class="fas fa-lock mr-1"></i> El alias <strong>"base"</strong> está reservado como plantilla principal. Usa otro nombre.', "error");
+                return;
+            }
+
+            if (!db) {
+                showAliasFeedback('<i class="fas fa-exclamation-triangle mr-1"></i> Configura primero tus credenciales <code>firebaseConfig</code> en el archivo.', "error");
+                return;
+            }
+
+            const btn = document.getElementById("btn-save-alias");
+            const payload = collectFormData(rawAlias.trim(), aliasId);
+
+            try {
+                btn.disabled = true;
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Guardando...';
+
+                // Mismo nivel que "base": subcolección {aliasId} -> documento "tarifas"
+                const aliasDocRef = doc(db, "presupuestos", "califamountainfestival27", aliasId, "tarifas");
+                await setDoc(aliasDocRef, {
+                    ...payload,
+                    updatedAt: serverTimestamp()
+                });
+
+                showAliasFeedback(
+                    `<i class="fas fa-check-circle mr-1"></i> Guardado correctamente en: <code class="bg-slate-950 px-2 py-0.5 rounded text-amber-300">presupuestos/califamountainfestival27/${aliasId}/tarifas</code>`,
+                    "success"
+                );
+            } catch (err) {
+                console.error("Error al guardar alias:", err);
+                showAliasFeedback(
+                    '<i class="fas fa-times-circle mr-1"></i> Error de permisos al guardar. Verifica que las reglas de Firestore permitan escritura en las subcolecciones de alias.',
+                    "error"
+                );
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-save"></i> Guardar Presupuesto';
+            }
+        });
+
+        // CARGAR UN PRESUPUESTO YA GUARDADO POR SU ALIAS
+        document.getElementById("btn-load-alias").addEventListener("click", async () => {
+            const rawAlias = document.getElementById("input-alias").value;
+            const aliasId = sanitizeAlias(rawAlias);
+
+            if (!aliasId) {
+                showAliasFeedback('<i class="fas fa-exclamation-circle mr-1"></i> Escribe el alias que quieres cargar.', "error");
+                return;
+            }
+
+            if (!db) {
+                showAliasFeedback('<i class="fas fa-exclamation-triangle mr-1"></i> Configura primero <code>firebaseConfig</code>.', "error");
+                return;
+            }
+
+            try {
+                const aliasDocRef = doc(db, "presupuestos", "califamountainfestival27", aliasId, "tarifas");
+                const snap = await getDoc(aliasDocRef);
+
+                if (snap.exists()) {
+                    populateInputs(snap.data());
+                    showAliasFeedback(
+                        `<i class="fas fa-folder-open mr-1"></i> Presupuesto cargado desde <code class="bg-slate-950 px-2 py-0.5 rounded text-amber-300">presupuestos/califamountainfestival27/${aliasId}/tarifas</code>`,
+                        "success"
+                    );
+                } else {
+                    showAliasFeedback(
+                        `<i class="fas fa-search mr-1"></i> No existe ningún presupuesto guardado con el alias <strong>${aliasId}</strong>.`,
+                        "error"
+                    );
+                }
+            } catch (err) {
+                console.error("Error al cargar alias:", err);
+                showAliasFeedback('<i class="fas fa-times-circle mr-1"></i> No se pudo leer ese alias desde Firestore.', "error");
+            }
+        });
+
+        // Restaurar valores de "base"
+        document.getElementById("btn-reset-defaults").addEventListener("click", () => {
+            populateInputs(baseCache);
+            document.getElementById("input-alias").value = "";
+            document.getElementById("input-cliente").value = "";
+            document.getElementById("alias-feedback").classList.add("hidden");
+            renderPreview();
+        });
+
+        // Mostrar / Ocultar editores de contenido
+        document.getElementById("toggle-contenido-btn").addEventListener("click", () => {
+            document.querySelectorAll(".contenido-editor").forEach(el => el.classList.toggle("hidden"));
+        });
+
+        // Escuchar cambios en todos los inputs en tiempo real
+        document.querySelectorAll("input, textarea").forEach(input => {
+            input.addEventListener("input", renderPreview);
+            input.addEventListener("change", renderPreview);
+        });
+
+        // Exportar a PDF
+        document.getElementById("btn-download-pdf").addEventListener("click", () => {
+            const element = document.getElementById("pdf-sheet");
+            const alias = sanitizeAlias(document.getElementById("input-alias").value);
+            const cliente = document.getElementById("input-cliente").value.trim();
+            const sufijoNombre = alias || (cliente ? cliente.replace(/[^a-z0-9]/gi, '_') : "");
+            const filename = `Tarifas_Califa_Mountain_Festival_2027${sufijoNombre ? "_" + sufijoNombre : ""}.pdf`;
+
+            const opt = {
+                margin: 0,
+                filename: filename,
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2, useCORS: true, scrollY: 0 },
+                jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' }
+            };
+
+            html2pdf().set(opt).from(element).save();
+        });
+
+        initFirestore();
+    </script>
+</body>
+</html>
